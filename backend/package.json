@@ -3,20 +3,27 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "tsx watch src/server.ts",
+    "start": "node build/server.js",
+    "build": "tsup src --out-dir build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/express": "^5.0.2",
-    "@types/node": "^22.15.21",
-    "tsup": "^8.5.0",
-    "tsx": "^4.19.4",
-    "typescript": "^5.8.3"
+    "@rocketseat/eslint-config": "2.2.2",
+    "@types/express": "5.0.2",
+    "@types/node": "22.15.21",
+    "eslint": "8.57.1",
+    "tsup": "8.5.0",
+    "tsx": "4.19.4",
+    "typescript": "5.8.3"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "dotenv": "16.5.0",
+    "express": "5.1.0",
+    "zod": "3.25.28"
   }
 }
