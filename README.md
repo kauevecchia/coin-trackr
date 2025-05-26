@@ -55,6 +55,8 @@
 
 ## Tecnologias
 
+### Backend
+
 - Node.js
 - Express.js
 - PostgreSQL + Prisma ORM
@@ -74,7 +76,7 @@
 - ESLint + Prettier
 
 ## Estrutura de Pastas (proposta inicial)
-
+```
 backend/
 ├── src/
 │ ├── @types/
@@ -119,3 +121,4 @@ frontend/
 ├── README.md
 ├── postcss.config.mjs
 └── tsconfig.json
+```
