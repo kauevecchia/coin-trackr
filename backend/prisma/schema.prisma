@@ -15,9 +15,48 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  name String
-  email String @unique
+  id            String        @id @default(uuid()) 
+  name          String        
+  email         String        @unique
+  password_hash String    
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+
+  transactions  Transaction[]
 
   @@map("users")
+}
+
+model Transaction {
+  id                    String          @id @default(uuid())
+  user_id               String          
+  crypto_symbol         String          
+  crypto_name           String          
+  quantity              Decimal         @db.Decimal(24, 10) 
+  price_at_transaction  Decimal         @db.Decimal(24, 10)
+  transaction_type      TransactionType 
+  transaction_date      DateTime        @default(now())
+  created_at            DateTime        @default(now())
+  updated_at            DateTime        @updatedAt
+
+  user                  User            @relation(fields: [user_id], references: [id])
+
+  @@index([user_id]) 
+  @@index([crypto_symbol]) 
+  @@map("transactions") 
+}
+
+enum TransactionType {
+  BUY
+  SELL
+}
+
+model CryptoPriceCache {
+  id           String   @id @default(uuid())
+  name         String  
+  symbol       String   @unique 
+  price        Decimal  @db.Decimal(24, 10)
+  last_updated DateTime @default(now())
+
+  @@map("crypto_price_cache")
 }
