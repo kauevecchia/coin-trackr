@@ -75,7 +75,7 @@
 - React Query
 - ESLint + Prettier
 
-## Estrutura de Pastas (proposta inicial)
+## Estrutura de Pastas
 ```
 backend/
 ├── src/
