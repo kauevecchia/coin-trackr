@@ -24,8 +24,12 @@
   },
   "dependencies": {
     "@prisma/client": "6.8.2",
+    "@types/bcryptjs": "2.4.6",
+    "@types/jsonwebtoken": "9.0.9",
+    "bcryptjs": "3.0.2",
     "dotenv": "16.5.0",
     "express": "5.1.0",
+    "jsonwebtoken": "9.0.2",
     "zod": "3.25.28"
   }
 }
