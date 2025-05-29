@@ -1,0 +1,11 @@
+version: '3'
+
+services: 
+  coin-trackr-pg:
+    image: bitnami/postgresql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USERNAME=docker
+      - POSTGRESQL_PASSWORD=docker
+      - POSTGRESQL_DATABASE=coin-trackr-api
