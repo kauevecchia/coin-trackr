@@ -1,0 +1,36 @@
+import { Request, Response } from 'express'
+import { makeAuthenticateUseCase } from '../../../use-cases/factories/make-authenticate-use-case'
+import { z } from 'zod'
+import { InvalidCredentialsError } from '../../../use-cases/errors/invalid-credentials-error'
+import { sign } from 'jsonwebtoken'
+import { env } from '../../../env'
+
+export async function authenticate(request: Request, response: Response) {
+  const authenticateBodySchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
+  })
+
+  const { email, password } = authenticateBodySchema.parse(request.body)
+
+  try {
+    const authenticateUserUseCase = makeAuthenticateUseCase()
+
+    const { user } = await authenticateUserUseCase.execute({
+      email,
+      password,
+    })
+
+    const token = sign({ sub: user.id }, env.JWT_SECRET, {
+      expiresIn: '7d',
+    })
+
+    return response.status(200).json({ token })
+  } catch (err) {
+    if (err instanceof InvalidCredentialsError) {
+      return response.status(400).json({ message: err.message })
+    }
+    console.error(err)
+    return response.status(500).json({ message: 'Internal server error.' })
+  }
+}
