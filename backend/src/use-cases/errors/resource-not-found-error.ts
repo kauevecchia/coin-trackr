@@ -1,4 +1,4 @@
-export class InvalidCredentialsError extends Error {
+export class ResourceNotFoundError extends Error {
   constructor() {
     super('Resource not found')
   }
