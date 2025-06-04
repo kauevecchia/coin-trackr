@@ -15,7 +15,7 @@ export async function profile(request: Request, response: Response) {
     const getUserProfileUseCase = makeGetUserProfileUseCase()
     const { user } = await getUserProfileUseCase.execute({ userId })
 
-    return response.status(200).json({
+    return response.status(200).send({
       user: {
         id: user.id,
         name: user.name,
