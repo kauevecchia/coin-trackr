@@ -7,7 +7,9 @@
     "start": "node build/server.js",
     "build": "tsup src --out-dir build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "vitest run --dir src/http",
+    "test:e2e:watch": "vitest --dir src/http"
   },
   "keywords": [],
   "author": "",
@@ -16,8 +18,10 @@
   "devDependencies": {
     "@rocketseat/eslint-config": "2.2.2",
     "@types/node": "22.15.21",
+    "@types/supertest": "6.0.3",
     "eslint": "8.57.1",
     "prisma": "6.8.2",
+    "supertest": "7.1.1",
     "tsup": "8.5.0",
     "tsx": "4.19.4",
     "typescript": "5.8.3",
