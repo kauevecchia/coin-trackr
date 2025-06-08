@@ -1,5 +1,3 @@
-// src/repositories/in-memory/in-memory-transactions-repository.ts
-
 import { Decimal } from '@prisma/client/runtime/library'
 import { Prisma, Transaction } from '@/generated/prisma'
 import { TransactionsRepository } from '../transactions-repository'
@@ -16,16 +14,14 @@ export class InMemoryTransactionsRepository implements TransactionsRepository {
     const transaction: InMemoryTransaction = {
       id: randomUUID(),
       user_id: data.user_id,
-      crypto_id: data.crypto_id,
       crypto_symbol: data.crypto_symbol,
       crypto_name: data.crypto_name,
-      quantity: data.quantity,
-      unit_price_at_transaction: data.unit_price_at_transaction,
+      quantity: new Decimal(data.quantity.toString()),
+      price_at_transaction: new Decimal(data.price_at_transaction.toString()),
       transaction_type: data.transaction_type,
-      transaction_date:
-        data.transaction_date instanceof Date
-          ? data.transaction_date
-          : new Date(data.transaction_date),
+      transaction_date: data.transaction_date
+        ? new Date(data.transaction_date)
+        : new Date(),
       created_at: new Date(),
       updated_at: new Date(),
     }
@@ -33,5 +29,13 @@ export class InMemoryTransactionsRepository implements TransactionsRepository {
     this.items.push(transaction)
 
     return transaction
+  }
+
+  async findManyByUserIdAndCryptoSymbol(userId: string, cryptoSymbol: string) {
+    const transactions = this.items.filter(
+      (item) => item.user_id === userId && item.crypto_symbol === cryptoSymbol,
+    )
+
+    return transactions
   }
 }

@@ -10,4 +10,15 @@ export class PrismaTransactionsRepository implements TransactionsRepository {
 
     return transaction
   }
+
+  async findManyByUserIdAndCryptoSymbol(userId: string, cryptoSymbol: string) {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        user_id: userId,
+        crypto_symbol: cryptoSymbol,
+      },
+    })
+
+    return transactions
+  }
 }
