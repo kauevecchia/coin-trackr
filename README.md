@@ -1,59 +1,59 @@
-## Requisitos Funcionais (RF)
+## Functional Requirements (FR)
 
-- [ ] O usuário deve poder se cadastrar na plataforma.
-- [ ] O usuário deve poder se autenticar (login) na plataforma.
-- [ ] O usuário deve poder registrar uma **compra** de criptomoeda, informando:
-  - Nome ou símbolo da cripto
-  - Quantidade adquirida
-  - Valor em dólar no momento da compra
-  - Data da compra (opcional, padrão = data atual)
-- [ ] O usuário deve poder registrar uma **venda** de criptomoeda, informando:
-  - Nome ou símbolo da cripto
-  - Quantidade vendida
-  - Valor em dólar no momento da venda
-  - Data da venda (opcional, padrão = data atual)
-- [ ] O usuário deve poder listar todo o seu **histórico de transações** (compras e vendas).
-- [ ] O usuário deve visualizar um **dashboard** com:
-  - Saldo atual de cada cripto
-  - Valor total investido
-  - Valor atual do portfólio
-  - Lucro ou prejuízo atual por cripto e no total
-- [ ] O sistema deve consultar uma API externa para buscar o valor atual das criptomoedas.
-
----
-
-## Regras de Negócio (RN)
-
-- [ ]  O usuário não pode vender mais criptomoedas do que possui.
-- [ ]  Toda transação (compra ou venda) deve registrar:
-  - Quantidade
-  - Valor por unidade na data da transação
-  - Tipo da transação (compra ou venda)
-- [ ]  Os cálculos de lucro/prejuízo são feitos com base na diferença entre:
-  - O preço médio das compras daquela cripto
-  - O preço atual da cripto (via API externa)
-- [ ]  Cada usuário possui um portfólio individual. Nenhum dado é compartilhado entre usuários.
-- [ ]  As transações não podem ser editadas, apenas adicionadas ou deletadas (para manter integridade histórica).
-- [ ] Se o preço atual da cripto não estiver disponível (falha na API externa), o sistema deve retornar o último valor consultado (cache) ou uma mensagem de erro amigável.
+- [x] The user must be able to register on the platform.
+- [x] The user must be able to authenticate (login) on the platform.
+- [x] The user must be able to record a cryptocurrency purchase, providing:
+    - Crypto name or symbol
+    - Quantity acquired
+    - Value in USD at the time of purchase
+    - Purchase date (optional, default = current date)
+- [x] The user must be able to record a cryptocurrency sale, providing:
+    - Crypto name or symbol
+    - Quantity sold
+    - Value in USD at the time of sale
+    - Sale date (optional, default = current date)
+- [x] The user must be able to list their entire transaction history (purchases and sales).
+- [ ] The user must view a dashboard with:
+    - Current balance of each crypto
+    - Total invested value
+    - Current portfolio value
+    - Current profit or loss per crypto and in total
+- [ ] The system must consult an external API to fetch the current cryptocurrency values.
 
 ---
 
-## Requisitos Não Funcionais (RNF)
+## Business Rules (BR)
 
-- [ ] A API deve ser desenvolvida utilizando **Node.js + Express**.
-- [ ] O banco de dados utilizado deve ser **PostgreSQL**.
-- [ ] A autenticação deve ser baseada em **JWT**.
-- [ ] As senhas dos usuários devem ser armazenadas de forma segura utilizando **hash (bcrypt)**.
-- [ ] As respostas da API devem seguir o padrão **RESTful**.
-- [ ] Deve ser possível realizar deploy da API em plataformas como **Render, Railway, Vercel ou similar**.
-- [ ] A API deve ter controle de erros global.
-- [ ] Deve possuir documentação da API (ex.: Swagger ou README detalhado).
-- [ ] A aplicação deve possuir testes básicos nas regras críticas (ex.: autenticação e transações).
-- [ ] O sistema deve implementar cache dos preços das criptos por um período (ex.: 1h) para otimizar requisições na API externa.
+- [x] The user cannot sell more cryptocurrency than they own.
+- [x] Every transaction (buy or sell) must record:
+    - Quantity
+    - Value per unit at the transaction date
+    - Transaction type (buy or sell)
+- [ ] Profit/loss calculations are based on the difference between:
+    - The average purchase price of that crypto
+    - The current crypto price (via external API)
+- [x] Each user has an individual portfolio. No data is shared between users.
+- [x] Transactions cannot be edited, only added or deleted (to maintain historical integrity).
+- [ ] If the current crypto price is not available (external API failure), the system must return the last consulted value (cache) or a user-friendly error message.
 
 ---
 
-## Tecnologias
+## Non-Functional Requirements (NFR)
+
+- [ ] The API must be developed using Node.js + Express.
+- [ ] The database used must be PostgreSQL.
+- [ ] Authentication must be based on JWT.
+- [ ] User passwords must be securely stored using hash (bcrypt).
+- [ ] API responses must follow the RESTful standard.
+- [ ] It must be possible to deploy the API on platforms like Render, Railway, Vercel, or similar.
+- [ ] The API must have global error handling.
+- [ ] API documentation must be provided (e.g., Swagger or detailed README).
+- [ ] The application must have basic tests for critical rules (e.g., authentication and transactions).
+- [ ] The system must implement cryptocurrency price caching for a period (e.g., 1h) to optimize external API requests.
+
+---
+
+## Technologies
 
 ### Backend
 
@@ -75,7 +75,8 @@
 - React Query
 - ESLint + Prettier
 
-## Estrutura de Pastas
+## Folder Structure
+
 ```
 backend/
 ├── src/
