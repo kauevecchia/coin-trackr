@@ -15,4 +15,5 @@ export interface TransactionsRepository {
       endDate?: Date
     },
   ): Promise<Transaction[]>
+  delete(userId: string, transactionId: string): Promise<void>
 }

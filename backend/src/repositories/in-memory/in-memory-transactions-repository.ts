@@ -31,6 +31,12 @@ export class InMemoryTransactionsRepository implements TransactionsRepository {
     return transaction
   }
 
+  async delete(userId: string, transactionId: string) {
+    this.items = this.items.filter(
+      (item) => item.user_id === userId && item.id !== transactionId,
+    )
+  }
+
   async findManyByUserIdAndCryptoSymbol(userId: string, cryptoSymbol: string) {
     const transactions = this.items.filter(
       (item) => item.user_id === userId && item.crypto_symbol === cryptoSymbol,

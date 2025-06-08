@@ -11,6 +11,15 @@ export class PrismaTransactionsRepository implements TransactionsRepository {
     return transaction
   }
 
+  async delete(userId: string, transactionId: string) {
+    await prisma.transaction.delete({
+      where: {
+        user_id: userId,
+        id: transactionId,
+      },
+    })
+  }
+
   async findManyByUserIdAndCryptoSymbol(userId: string, cryptoSymbol: string) {
     const transactions = await prisma.transaction.findMany({
       where: {
