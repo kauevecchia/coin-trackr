@@ -1,8 +1,8 @@
 import { prisma } from '@/lib/prisma'
-import { CryptoPriceCacheRepository } from '../crypto-price-cache-repository'
+import { CryptoCacheRepository } from '../crypto-cache-repository'
 import { Prisma } from '@/generated/prisma'
 
-export class PrismaCryptoCacheRepository implements CryptoPriceCacheRepository {
+export class PrismaCryptoCacheRepository implements CryptoCacheRepository {
   async findBySymbol(symbol: string) {
     const crypto = await prisma.cryptoPriceCache.findUnique({
       where: {

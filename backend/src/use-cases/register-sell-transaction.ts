@@ -1,8 +1,8 @@
 import { Decimal } from '@prisma/client/runtime/library'
 import { TransactionsRepository } from '@/repositories/transactions-repository'
-import { CryptoPriceCacheRepository } from '@/repositories/crypto-price-cache-repository'
+import { CryptoCacheRepository } from '@/repositories/crypto-cache-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
-import { InsufficientFundsError } from './errors/insufFicient-funds-error'
+import { InsufficientFundsError } from './errors/insufficient-funds-error'
 import { TransactionType } from '@/generated/prisma'
 
 interface RegisterSellTransactionUseCaseRequest {
@@ -16,7 +16,7 @@ interface RegisterSellTransactionUseCaseRequest {
 export class RegisterSellTransactionUseCase {
   constructor(
     private transactionsRepository: TransactionsRepository,
-    private cryptoPriceCacheRepository: CryptoPriceCacheRepository,
+    private cryptoPriceCacheRepository: CryptoCacheRepository,
   ) {}
 
   async execute({

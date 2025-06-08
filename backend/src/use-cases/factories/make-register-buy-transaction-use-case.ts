@@ -1,13 +1,13 @@
 import { PrismaTransactionsRepository } from '@/repositories/prisma/prisma-transactions-repository'
 import { RegisterBuyTransactionUseCase } from '../register-buy-transaction'
-import { PrismaCryptoPriceCacheRepository } from '@/repositories/prisma/prisma-crypto-price-cache-repository'
+import { PrismaCryptoCacheRepository } from '@/repositories/prisma/prisma-crypto-cache-repository'
 
 export function makeRegisterBuyTransactionUseCase() {
   const transactionsRepository = new PrismaTransactionsRepository()
-  const cryptoPriceCacheRepository = new PrismaCryptoPriceCacheRepository()
+  const cryptoCacheRepository = new PrismaCryptoCacheRepository()
   const registerBuyTransactionUseCase = new RegisterBuyTransactionUseCase(
     transactionsRepository,
-    cryptoPriceCacheRepository,
+    cryptoCacheRepository,
   )
 
   return registerBuyTransactionUseCase

@@ -1,11 +1,9 @@
-import { CryptoPriceCacheRepository } from '../crypto-price-cache-repository'
+import { CryptoCacheRepository } from '../crypto-cache-repository'
 import { CryptoPriceCache, Prisma } from '@/generated/prisma'
 import { randomUUID } from 'node:crypto'
 import { Decimal } from '@prisma/client/runtime/library'
 
-export class InMemoryCryptoPriceCacheRepository
-  implements CryptoPriceCacheRepository
-{
+export class InMemoryCryptoCacheRepository implements CryptoCacheRepository {
   public items: CryptoPriceCache[] = []
 
   async findBySymbol(symbol: string): Promise<CryptoPriceCache | null> {

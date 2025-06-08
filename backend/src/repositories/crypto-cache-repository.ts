@@ -1,6 +1,6 @@
 import { Prisma, CryptoPriceCache } from '@/generated/prisma'
 
-export interface CryptoPriceCacheRepository {
+export interface CryptoCacheRepository {
   findBySymbol(symbol: string): Promise<CryptoPriceCache | null>
 
   create(

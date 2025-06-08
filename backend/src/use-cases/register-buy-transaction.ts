@@ -1,6 +1,6 @@
 import { Decimal } from '@prisma/client/runtime/library'
 import { TransactionsRepository } from '@/repositories/transactions-repository'
-import { CryptoPriceCacheRepository } from '@/repositories/crypto-price-cache-repository'
+import { CryptoCacheRepository } from '@/repositories/crypto-cache-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface RegisterBuyTransactionUseCaseRequest {
@@ -14,7 +14,7 @@ interface RegisterBuyTransactionUseCaseRequest {
 export class RegisterBuyTransactionUseCase {
   constructor(
     private transactionsRepository: TransactionsRepository,
-    private cryptoPriceCacheRepository: CryptoPriceCacheRepository,
+    private cryptoPriceCacheRepository: CryptoCacheRepository,
   ) {}
 
   async execute({

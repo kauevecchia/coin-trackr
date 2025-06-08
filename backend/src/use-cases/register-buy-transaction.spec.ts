@@ -1,17 +1,17 @@
 import { Decimal } from '@prisma/client/runtime/library'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { InMemoryTransactionsRepository } from '@/repositories/in-memory/in-memory-transactions-repository'
-import { InMemoryCryptoPriceCacheRepository } from '@/repositories/in-memory/in-memory-crypto-price-cache-repository'
+import { InMemoryCryptoCacheRepository } from '@/repositories/in-memory/in-memory-crypto-cache-repository'
 import { RegisterBuyTransactionUseCase } from './register-buy-transaction'
 
 let transactionsRepository: InMemoryTransactionsRepository
-let cryptoPriceCacheRepository: InMemoryCryptoPriceCacheRepository
+let cryptoPriceCacheRepository: InMemoryCryptoCacheRepository
 let sut: RegisterBuyTransactionUseCase
 
 describe('Register Buy Transaction Use Case', () => {
   beforeEach(() => {
     transactionsRepository = new InMemoryTransactionsRepository()
-    cryptoPriceCacheRepository = new InMemoryCryptoPriceCacheRepository()
+    cryptoPriceCacheRepository = new InMemoryCryptoCacheRepository()
     sut = new RegisterBuyTransactionUseCase(
       transactionsRepository,
       cryptoPriceCacheRepository,

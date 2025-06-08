@@ -1,16 +1,14 @@
-// src/use-cases/test/register-sell-transaction.spec.ts
-
 import { describe, it, expect, beforeEach } from 'vitest'
 import { RegisterSellTransactionUseCase } from './register-sell-transaction'
 import { InMemoryTransactionsRepository } from '@/repositories/in-memory/in-memory-transactions-repository'
-import { InMemoryCryptoPriceCacheRepository } from '@/repositories/in-memory/in-memory-crypto-price-cache-repository'
+import { InMemoryCryptoCacheRepository } from '@/repositories/in-memory/in-memory-crypto-cache-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Decimal } from '@prisma/client/runtime/library'
 import { TransactionType } from '@/generated/prisma'
 import { InsufficientFundsError } from './errors/insufFicient-funds-error'
 
 let transactionsRepository: InMemoryTransactionsRepository
-let cryptoPriceCacheRepository: InMemoryCryptoPriceCacheRepository
+let cryptoPriceCacheRepository: InMemoryCryptoCacheRepository
 let sut: RegisterSellTransactionUseCase
 
 const TEST_USER_ID = 'user-123'
@@ -20,7 +18,7 @@ const TEST_CRYPTO_NAME = 'Bitcoin'
 describe('Register Sell Transaction Use Case', () => {
   beforeEach(async () => {
     transactionsRepository = new InMemoryTransactionsRepository()
-    cryptoPriceCacheRepository = new InMemoryCryptoPriceCacheRepository()
+    cryptoPriceCacheRepository = new InMemoryCryptoCacheRepository()
     sut = new RegisterSellTransactionUseCase(
       transactionsRepository,
       cryptoPriceCacheRepository,
