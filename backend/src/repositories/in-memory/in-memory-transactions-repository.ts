@@ -38,4 +38,39 @@ export class InMemoryTransactionsRepository implements TransactionsRepository {
 
     return transactions
   }
+
+  async findTransactionsByFilters(
+    userId: string,
+    filters?: {
+      cryptoSymbol?: string
+      transactionType?: string
+      startDate?: Date
+      endDate?: Date
+    },
+  ) {
+    const filteredTransactions = this.items.filter((transaction) => {
+      let matches = transaction.user_id === userId
+
+      if (matches && filters?.transactionType) {
+        matches = transaction.transaction_type === filters.transactionType
+      }
+      if (matches && filters?.cryptoSymbol) {
+        matches = transaction.crypto_symbol === filters.cryptoSymbol
+      }
+      if (matches && filters?.startDate) {
+        matches = transaction.transaction_date >= filters.startDate
+      }
+      if (matches && filters?.endDate) {
+        matches = transaction.transaction_date <= filters.endDate
+      }
+
+      return matches
+    })
+
+    filteredTransactions.sort(
+      (a, b) => b.transaction_date.getTime() - a.transaction_date.getTime(),
+    )
+
+    return filteredTransactions
+  }
 }

@@ -1,6 +1,7 @@
 import { Decimal } from '@prisma/client/runtime/library'
 import { TransactionsRepository } from '@/repositories/transactions-repository'
 import { CryptoPriceCacheRepository } from '@/repositories/crypto-price-cache-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface RegisterBuyTransactionUseCaseRequest {
   userId: string
@@ -27,7 +28,7 @@ export class RegisterBuyTransactionUseCase {
       await this.cryptoPriceCacheRepository.findBySymbol(cryptoId)
 
     if (!cryptoData) {
-      throw new Error('Crypto not found in cache.')
+      throw new ResourceNotFoundError()
     }
 
     const transaction = await this.transactionsRepository.create({

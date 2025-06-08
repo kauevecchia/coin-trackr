@@ -6,4 +6,13 @@ export interface TransactionsRepository {
     userId: string,
     cryptoSymbol: string,
   ): Promise<Transaction[]>
+  findTransactionsByFilters(
+    userId: string,
+    filters?: {
+      cryptoSymbol?: string
+      transactionType?: string
+      startDate?: Date
+      endDate?: Date
+    },
+  ): Promise<Transaction[]>
 }

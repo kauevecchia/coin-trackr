@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { Prisma } from '@/generated/prisma'
+import { Prisma, TransactionType } from '@/generated/prisma'
 import { TransactionsRepository } from '../transactions-repository'
 
 export class PrismaTransactionsRepository implements TransactionsRepository {
@@ -20,5 +20,43 @@ export class PrismaTransactionsRepository implements TransactionsRepository {
     })
 
     return transactions
+  }
+
+  async findTransactionsByFilters(
+    userId: string,
+    filters?: {
+      cryptoSymbol?: string
+      transactionType?: string
+      startDate?: Date
+      endDate?: Date
+    },
+  ) {
+    const whereClause: Prisma.TransactionWhereInput = {
+      user_id: userId,
+    }
+
+    if (filters?.transactionType) {
+      whereClause.transaction_type = filters.transactionType as TransactionType
+    }
+    if (filters?.cryptoSymbol) {
+      whereClause.crypto_symbol = filters.cryptoSymbol
+    }
+    if (filters?.startDate || filters?.endDate) {
+      whereClause.transaction_date = {}
+
+      if (filters.startDate) {
+        whereClause.transaction_date.gte = filters.startDate
+      }
+      if (filters.endDate) {
+        whereClause.transaction_date.lte = filters.endDate
+      }
+    }
+
+    return await prisma.transaction.findMany({
+      where: whereClause,
+      orderBy: {
+        transaction_date: 'desc',
+      },
+    })
   }
 }
