@@ -51,12 +51,13 @@ enum TransactionType {
   SELL
 }
 
-model CryptoPriceCache {
+model CryptoCache {
   id           String   @id @default(uuid())
   name         String  
   symbol       String   @unique 
+  image_url    String?
   price        Decimal  @db.Decimal(24, 10)
   last_updated DateTime @default(now())
 
-  @@map("crypto_price_cache")
+  @@map("crypto_cache")
 }
