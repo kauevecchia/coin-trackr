@@ -4,7 +4,7 @@ import { Prisma } from '@/generated/prisma'
 
 export class PrismaCryptoCacheRepository implements CryptoCacheRepository {
   async findBySymbol(symbol: string) {
-    const crypto = await prisma.cryptoPriceCache.findUnique({
+    const crypto = await prisma.cryptoCache.findUnique({
       where: {
         symbol,
       },
@@ -13,32 +13,28 @@ export class PrismaCryptoCacheRepository implements CryptoCacheRepository {
     return crypto
   }
 
-  async create(data: Prisma.CryptoPriceCacheUncheckedCreateInput) {
-    const crypto = await prisma.cryptoPriceCache.create({
+  async create(data: Prisma.CryptoCacheUncheckedCreateInput) {
+    const crypto = await prisma.cryptoCache.create({
       data,
     })
 
     return crypto
   }
 
-  async upsert(
-    symbol: string,
-    createData: Prisma.CryptoPriceCacheCreateInput,
-    updateData: Prisma.CryptoPriceCacheUpdateInput,
-  ) {
-    const crypto = await prisma.cryptoPriceCache.upsert({
+  async upsert(symbol: string, data: Prisma.CryptoCacheCreateInput) {
+    const crypto = await prisma.cryptoCache.upsert({
       where: {
         symbol,
       },
-      create: createData,
-      update: updateData,
+      create: data,
+      update: data,
     })
 
     return crypto
   }
 
   async delete(symbol: string) {
-    await prisma.cryptoPriceCache.delete({
+    await prisma.cryptoCache.delete({
       where: {
         symbol,
       },

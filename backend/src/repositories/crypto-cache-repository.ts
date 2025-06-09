@@ -1,17 +1,14 @@
-import { Prisma, CryptoPriceCache } from '@/generated/prisma'
+import { Prisma, CryptoCache } from '@/generated/prisma'
 
 export interface CryptoCacheRepository {
-  findBySymbol(symbol: string): Promise<CryptoPriceCache | null>
+  findBySymbol(symbol: string): Promise<CryptoCache | null>
 
-  create(
-    data: Prisma.CryptoPriceCacheUncheckedCreateInput,
-  ): Promise<CryptoPriceCache>
+  create(data: Prisma.CryptoCacheUncheckedCreateInput): Promise<CryptoCache>
 
   upsert(
     symbol: string,
-    createData: Prisma.CryptoPriceCacheCreateInput,
-    updateData: Prisma.CryptoPriceCacheUpdateInput,
-  ): Promise<CryptoPriceCache>
+    data: Prisma.CryptoCacheCreateInput,
+  ): Promise<CryptoCache>
 
   delete(symbol: string): Promise<void>
 }
