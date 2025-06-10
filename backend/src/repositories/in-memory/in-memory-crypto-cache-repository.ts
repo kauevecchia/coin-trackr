@@ -18,7 +18,10 @@ export class InMemoryCryptoCacheRepository implements CryptoCacheRepository {
       id: randomUUID(),
       symbol: data.symbol,
       name: data.name,
-      price: new Decimal(data.price.toString()),
+      price:
+        typeof data.price === 'string' || typeof data.price === 'number'
+          ? new Decimal(data.price.toString())
+          : (data.price as Decimal),
       image_url: data.image_url || null,
       last_updated: data.last_updated
         ? new Date(data.last_updated)
@@ -35,15 +38,20 @@ export class InMemoryCryptoCacheRepository implements CryptoCacheRepository {
   ): Promise<CryptoCache> {
     const existingIndex = this.items.findIndex((item) => item.symbol === symbol)
 
+    const now = new Date()
+
+    const priceAsDecimal =
+      typeof data.price === 'string' || typeof data.price === 'number'
+        ? new Decimal(data.price.toString())
+        : data.price
+
     if (existingIndex >= 0) {
-      const updatedItem = {
+      const updatedItem: CryptoCache = {
         ...this.items[existingIndex],
-        ...(data as CryptoCache),
-        price: data.price
-          ? new Decimal(data.price.toString())
-          : this.items[existingIndex].price,
+        name: data.name,
+        price: priceAsDecimal as Decimal,
         image_url: data.image_url || null,
-        last_updated: new Date(),
+        last_updated: now,
       }
       this.items[existingIndex] = updatedItem
       return updatedItem
@@ -52,11 +60,9 @@ export class InMemoryCryptoCacheRepository implements CryptoCacheRepository {
         id: randomUUID(),
         symbol: data.symbol,
         name: data.name,
-        price: new Decimal(data.price.toString()),
+        price: priceAsDecimal as Decimal,
         image_url: data.image_url || null,
-        last_updated: data.last_updated
-          ? new Date(data.last_updated)
-          : new Date(),
+        last_updated: now,
       }
       this.items.push(newCrypto)
       return newCrypto
