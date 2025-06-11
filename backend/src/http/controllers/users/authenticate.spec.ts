@@ -1,4 +1,3 @@
-// src/http/controllers/users/authenticate.e2e.spec.ts
 import request from 'supertest'
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { app } from '../../../app'
@@ -28,7 +27,7 @@ describe('Authenticate (e2e)', () => {
 
   beforeEach(async () => {
     await prisma.transaction.deleteMany()
-    await prisma.cryptoPriceCache.deleteMany()
+    await prisma.cryptoCache.deleteMany()
     await prisma.user.deleteMany()
   })
 
