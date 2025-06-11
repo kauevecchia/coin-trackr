@@ -13,6 +13,12 @@ export class PrismaCryptoCacheRepository implements CryptoCacheRepository {
     return crypto
   }
 
+  async findAll() {
+    const fixedCryptosDetails = await prisma.cryptoCache.findMany()
+
+    return fixedCryptosDetails
+  }
+
   async create(data: Prisma.CryptoCacheUncheckedCreateInput) {
     const crypto = await prisma.cryptoCache.create({
       data,

@@ -11,6 +11,10 @@ export class InMemoryCryptoCacheRepository implements CryptoCacheRepository {
     return crypto || null
   }
 
+  async findAll(): Promise<CryptoCache[]> {
+    return this.items
+  }
+
   async create(
     data: Prisma.CryptoCacheUncheckedCreateInput,
   ): Promise<CryptoCache> {
