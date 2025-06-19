@@ -1,14 +1,21 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import request from 'supertest'
 import { app } from '@/app'
 import { Server } from 'http'
 import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
+import { prisma } from '@/lib/prisma'
 
 let testServer: Server
 
 describe('Register Buy Transaction (e2e)', () => {
   beforeAll(async () => {
     testServer = app.listen(0)
+  })
+
+  beforeEach(async () => {
+    await prisma.transaction.deleteMany()
+    await prisma.cryptoCache.deleteMany()
+    await prisma.user.deleteMany()
   })
 
   afterAll(async () => {
