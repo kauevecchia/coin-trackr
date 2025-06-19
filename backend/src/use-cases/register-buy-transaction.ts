@@ -5,7 +5,7 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface RegisterBuyTransactionUseCaseRequest {
   userId: string
-  cryptoId: string
+  cryptoSymbol: string
   quantity: Decimal
   unitPriceAtTransaction: Decimal
   transactionDate: Date
@@ -19,13 +19,13 @@ export class RegisterBuyTransactionUseCase {
 
   async execute({
     userId,
-    cryptoId,
+    cryptoSymbol,
     quantity,
     unitPriceAtTransaction,
     transactionDate,
   }: RegisterBuyTransactionUseCaseRequest) {
     const cryptoData =
-      await this.cryptoPriceCacheRepository.findBySymbol(cryptoId)
+      await this.cryptoPriceCacheRepository.findBySymbol(cryptoSymbol)
 
     if (!cryptoData) {
       throw new ResourceNotFoundError()
