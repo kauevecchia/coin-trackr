@@ -8,7 +8,6 @@ export async function registerBuyTransaction(
   response: Response,
 ) {
   const registerBuyTransactionBodySchema = z.object({
-    userId: z.string(),
     cryptoSymbol: z.string(),
     quantity: z.coerce.number().transform((value) => new Decimal(value)),
     unitPriceAtTransaction: z.coerce
@@ -17,13 +16,14 @@ export async function registerBuyTransaction(
     transactionDate: z.coerce.date().transform((value) => new Date(value)),
   })
 
-  const {
-    userId,
-    cryptoSymbol,
-    quantity,
-    unitPriceAtTransaction,
-    transactionDate,
-  } = registerBuyTransactionBodySchema.parse(request.body)
+  const { cryptoSymbol, quantity, unitPriceAtTransaction, transactionDate } =
+    registerBuyTransactionBodySchema.parse(request.body)
+
+  const userId = request.user?.id
+
+  if (!userId) {
+    return response.status(401).json({ message: 'User not authenticated' })
+  }
 
   const registerBuyTransaction = makeRegisterBuyTransactionUseCase()
 
