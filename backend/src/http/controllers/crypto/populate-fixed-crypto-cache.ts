@@ -13,6 +13,7 @@ export async function populateFixedCryptoUseCase(
 
     return response.status(204).send()
   } catch (error) {
+    console.error(error)
     return response.status(500).send()
   }
 }
