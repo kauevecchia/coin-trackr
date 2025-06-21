@@ -8,6 +8,6 @@ const cryptoRoutes = Router()
 cryptoRoutes.use(verifyJWT)
 
 cryptoRoutes.get('/fixed-crypto-details', getAllFixedCryptoDetails)
-cryptoRoutes.post('/populate-fixed-crypto-cache', populateFixedCryptoUseCase)
+cryptoRoutes.post('/populate-cache', populateFixedCryptoUseCase)
 
 export { cryptoRoutes }
