@@ -1,5 +1,3 @@
-// src/http/middlewares/error-handler.ts
-
 import { Request, Response } from 'express'
 import { ZodError } from 'zod'
 import { env } from '@/env'
@@ -17,8 +15,18 @@ export function errorHandler(
     })
   }
 
-  if (env.NODE_ENV !== 'production') {
-    console.error(err)
+  if (env.NODE_ENV !== 'production' && env.NODE_ENV !== 'test') {
+    console.error('GLOBAL_ERROR_HANDLER_LOG:', err)
+    if (err.stack) {
+      console.error(err.stack)
+    }
+  }
+
+  if (env.NODE_ENV === 'test') {
+    console.error('TEST_ERROR_HANDLED:', {
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    })
   }
 
   return res.status(500).send({ message: 'Internal server error.' })
