@@ -4,13 +4,16 @@ import { makeDeleteTransactionUseCase } from '@/use-cases/factories/make-delete-
 
 export async function deleteTransaction(request: Request, response: Response) {
   const deleteTransactionBodySchema = z.object({
-    userId: z.string(),
     transactionId: z.string(),
   })
 
-  const { userId, transactionId } = deleteTransactionBodySchema.parse(
-    request.body,
-  )
+  const { transactionId } = deleteTransactionBodySchema.parse(request.body)
+
+  const userId = request.user?.id
+
+  if (!userId) {
+    return response.status(401).json({ message: 'User not authenticated' })
+  }
 
   const deleteTransaction = makeDeleteTransactionUseCase()
 
