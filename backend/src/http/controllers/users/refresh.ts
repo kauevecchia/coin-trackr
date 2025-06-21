@@ -1,4 +1,3 @@
-// src/http/controllers/users/refresh.ts
 import { Request, Response } from 'express'
 import {
   verify,
@@ -46,8 +45,6 @@ export async function refresh(request: Request, response: Response) {
       token: newAccessToken,
     })
   } catch (err) {
-    console.error('Erro ao processar refresh token:', err)
-
     if (err instanceof TokenExpiredError) {
       return response.status(401).json({ message: 'Refresh token expired.' })
     }

@@ -26,7 +26,6 @@ export async function profile(request: Request, response: Response) {
     if (err instanceof ResourceNotFoundError) {
       return response.status(404).json({ message: err.message })
     }
-    console.error(err)
     return response
       .status(500)
       .json({ message: 'internal server error getting user profile' })
