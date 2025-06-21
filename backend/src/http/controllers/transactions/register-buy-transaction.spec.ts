@@ -33,12 +33,20 @@ describe('Register Buy Transaction (e2e)', () => {
 
   it('should be able to register a buy transaction', async () => {
     const { token } = await createAndAuthenticateUser(testServer)
+    await prisma.cryptoCache.create({
+      data: {
+        symbol: 'BTC',
+        name: 'Bitcoin',
+        price: 60000,
+        image_url: 'https://assets.coingecko.com/btc.png',
+        last_updated: new Date(),
+      },
+    })
 
     const response = await request(testServer)
-      .post('/transactions/register-buy-transaction')
+      .post('/transactions/buy')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        userId: 'user-01',
         cryptoSymbol: 'BTC',
         quantity: 1,
         unitPriceAtTransaction: 10000,
