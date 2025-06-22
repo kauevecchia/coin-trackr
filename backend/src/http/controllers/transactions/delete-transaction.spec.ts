@@ -131,7 +131,6 @@ describe('Delete Transaction (e2e)', () => {
     expect(response.statusCode).toEqual(404)
     expect(response.body).toEqual({ message: 'Transaction not found' })
 
-    // Verify transaction still exists
     const transactionAfterAttempt = await prisma.transaction.findUnique({
       where: { id: transaction.id },
     })

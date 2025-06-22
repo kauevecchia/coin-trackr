@@ -1,4 +1,3 @@
-// src/http/controllers/users/authenticate.ts
 import { Request, Response } from 'express'
 import { makeAuthenticateUseCase } from '@/use-cases/factories/make-authenticate-use-case'
 import { z } from 'zod'
