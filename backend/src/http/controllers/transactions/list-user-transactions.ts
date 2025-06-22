@@ -7,26 +7,30 @@ export async function listUserTransactions(
   request: Request,
   response: Response,
 ) {
-  const listUserTransactionsBodySchema = z.object({
-    userId: z.string(),
-    filters: z
-      .object({
-        transactionType: z.nativeEnum(TransactionType).optional(),
-        cryptoSymbol: z.string().optional(),
-        startDate: z.coerce.date().optional(),
-        endDate: z.coerce.date().optional(),
-      })
-      .optional(),
+  const listUserTransactionsQuerySchema = z.object({
+    transactionType: z.nativeEnum(TransactionType).optional(),
+    cryptoSymbol: z.string().optional(),
+    startDate: z.coerce.date().optional(),
+    endDate: z.coerce.date().optional(),
   })
 
-  const { userId, filters } = listUserTransactionsBodySchema.parse(request.body)
+  const filters = listUserTransactionsQuerySchema.parse(request.query)
+  const userId = request.user?.id
 
-  const listUserTransactions = makeListUserTransactionsUseCase()
+  if (!userId) {
+    return response.status(401).json({ message: 'User not authenticated' })
+  }
 
-  await listUserTransactions.execute({
-    userId,
-    filters,
-  })
+  try {
+    const listUserTransactions = makeListUserTransactionsUseCase()
 
-  return response.status(200).send()
+    const { transactions } = await listUserTransactions.execute({
+      userId,
+      filters,
+    })
+
+    return response.status(200).json({ transactions })
+  } catch (err) {
+    return response.status(500).json({ message: 'Internal server error.' })
+  }
 }
