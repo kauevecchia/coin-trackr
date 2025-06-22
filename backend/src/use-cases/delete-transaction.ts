@@ -1,4 +1,5 @@
 import { TransactionsRepository } from '@/repositories/transactions-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface DeleteTransactionUseCaseRequest {
   userId: string
@@ -12,6 +13,18 @@ export class DeleteTransactionUseCase {
     userId,
     transactionId,
   }: DeleteTransactionUseCaseRequest): Promise<void> {
-    await this.transactionsRepository.delete(userId, transactionId)
+    try {
+      await this.transactionsRepository.delete(userId, transactionId)
+    } catch (error) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'P2025'
+      ) {
+        throw new ResourceNotFoundError()
+      }
+      throw error
+    }
   }
 }

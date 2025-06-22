@@ -30,8 +30,15 @@ export default defineConfig({
 
     environment: 'node',
     globals: true,
-    setupFiles: [],
     clearMocks: true,
     mockReset: true,
+    testTimeout: 10000,
+    hookTimeout: 10000,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
   },
 })
