@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: coin-trackr-postgres-dev
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: coin-trackr-api
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - coin-trackr-network-dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docker -d coin-trackr-api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node.js Backend Application (Development)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: coin-trackr-backend-dev
+    restart: unless-stopped
+    ports:
+      - "3333:3333"
+    environment:
+      NODE_ENV: development
+      PORT: 3333
+      DATABASE_URL: postgresql://docker:docker@postgres:5432/coin-trackr-api
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      COINGECKO_API_KEY: your-coingecko-api-key
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - coin-trackr-network-dev
+    command: npm run start:dev
+
+volumes:
+  postgres_data_dev:
+    driver: local
+
+networks:
+  coin-trackr-network-dev:
+    driver: bridge 
