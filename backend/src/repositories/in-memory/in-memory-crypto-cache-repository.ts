@@ -1,0 +1,79 @@
+import { CryptoCacheRepository } from '../crypto-cache-repository'
+import { CryptoCache, Prisma } from '@/generated/prisma'
+import { randomUUID } from 'node:crypto'
+import { Decimal } from '@prisma/client/runtime/library'
+
+export class InMemoryCryptoCacheRepository implements CryptoCacheRepository {
+  public items: CryptoCache[] = []
+
+  async findBySymbol(symbol: string): Promise<CryptoCache | null> {
+    const crypto = this.items.find((item) => item.symbol === symbol)
+    return crypto || null
+  }
+
+  async findAll(): Promise<CryptoCache[]> {
+    return this.items
+  }
+
+  async create(
+    data: Prisma.CryptoCacheUncheckedCreateInput,
+  ): Promise<CryptoCache> {
+    const newCrypto: CryptoCache = {
+      id: randomUUID(),
+      symbol: data.symbol,
+      name: data.name,
+      price:
+        typeof data.price === 'string' || typeof data.price === 'number'
+          ? new Decimal(data.price.toString())
+          : (data.price as Decimal),
+      image_url: data.image_url || null,
+      last_updated: data.last_updated
+        ? new Date(data.last_updated)
+        : new Date(),
+    }
+
+    this.items.push(newCrypto)
+    return newCrypto
+  }
+
+  async upsert(
+    symbol: string,
+    data: Prisma.CryptoCacheCreateInput,
+  ): Promise<CryptoCache> {
+    const existingIndex = this.items.findIndex((item) => item.symbol === symbol)
+
+    const now = new Date()
+
+    const priceAsDecimal =
+      typeof data.price === 'string' || typeof data.price === 'number'
+        ? new Decimal(data.price.toString())
+        : data.price
+
+    if (existingIndex >= 0) {
+      const updatedItem: CryptoCache = {
+        ...this.items[existingIndex],
+        name: data.name,
+        price: priceAsDecimal as Decimal,
+        image_url: data.image_url || null,
+        last_updated: now,
+      }
+      this.items[existingIndex] = updatedItem
+      return updatedItem
+    } else {
+      const newCrypto: CryptoCache = {
+        id: randomUUID(),
+        symbol: data.symbol,
+        name: data.name,
+        price: priceAsDecimal as Decimal,
+        image_url: data.image_url || null,
+        last_updated: now,
+      }
+      this.items.push(newCrypto)
+      return newCrypto
+    }
+  }
+
+  async delete(symbol: string): Promise<void> {
+    this.items = this.items.filter((item) => item.symbol !== symbol)
+  }
+}

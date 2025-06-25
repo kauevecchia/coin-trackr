@@ -1,4 +1,3 @@
-// src/http/middlewares/verify-jwt.ts
 import { Request, Response, NextFunction } from 'express'
 import { verify } from 'jsonwebtoken'
 import { env } from '../../env'
@@ -18,7 +17,6 @@ export async function verifyJWT(
   response: Response,
   next: NextFunction,
 ) {
-  // Obter o token do cabeçalho Authorization
   const authHeader = request.headers.authorization
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
