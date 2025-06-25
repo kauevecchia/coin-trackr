@@ -5,7 +5,8 @@
   "scripts": {
     "start:dev": "tsx watch src/server.ts",
     "start": "node build/server.js",
-    "build": "tsup src --out-dir build",
+    "build": "tsup",
+    "clean": "rimraf build src/generated",
     "test": "vitest run --dir src/use-cases/",
     "test:watch": "vitest",
     "test:e2e": "vitest run --dir src/http",
