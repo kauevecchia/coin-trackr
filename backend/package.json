@@ -10,7 +10,8 @@
     "test": "vitest run --dir src/use-cases/",
     "test:watch": "vitest",
     "test:e2e": "vitest run --dir src/http",
-    "test:e2e:watch": "vitest --dir src/http"
+    "test:e2e:watch": "vitest --dir src/http",
+    "run:populate-cache": "tsx src/scripts/run-populate-cache.ts"
   },
   "keywords": [],
   "author": "",
