@@ -5,7 +5,7 @@ import { InMemoryCryptoCacheRepository } from '@/repositories/in-memory/in-memor
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Decimal } from '@prisma/client/runtime/library'
 import { TransactionType } from '@/generated/prisma'
-import { InsufficientFundsError } from './errors/insufFicient-funds-error'
+import { InsufficientFundsError } from './errors/insufficient-funds-error'
 
 let transactionsRepository: InMemoryTransactionsRepository
 let cryptoPriceCacheRepository: InMemoryCryptoCacheRepository
