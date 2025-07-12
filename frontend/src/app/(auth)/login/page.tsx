@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -10,8 +12,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginFormInputs, loginFormSchema } from "@/schemas/authSchemas";
 
 export default function Login() {
+    const {
+      control,
+      handleSubmit,
+      reset,
+      formState: { errors },
+    } = useForm<LoginFormInputs>({
+      resolver: zodResolver(loginFormSchema),
+      mode: "onChange",
+      defaultValues: {
+        email: "",
+        password: "",
+      },
+    });
+
+    const onSubmit = (data: LoginFormInputs) => {
+      console.log(data);
+      reset();
+    };
+
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="flex flex-col items-center justify-center">
@@ -23,22 +47,35 @@ export default function Login() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
+              <Controller
+                control={control}
+                name="email"
+                render={({ field }) => (
+                  <Input {...field} type="email" placeholder="m@example.com" required />
+                )}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
               </div>
-              <Input id="password" type="password" required />
+              <Controller
+                control={control}
+                name="password"
+                render={({ field }) => (
+                  <Input {...field} type="password" required />
+                )}
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password.message}</p>
+              )}
             </div>
           </div>
         </form>
