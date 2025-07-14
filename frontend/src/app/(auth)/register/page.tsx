@@ -20,6 +20,7 @@ export default function Register() {
     mode: "onChange",
     defaultValues: {
       email: "",
+      name: "",
       password: "",
       confirmPassword: "",
     },
@@ -29,8 +30,6 @@ export default function Register() {
     console.log(data);
     reset();
   };
-
-
 
     return (
       <Card className="w-full max-w-sm">
@@ -61,6 +60,24 @@ export default function Register() {
                 />
                 {errors.email && (
                   <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
+              </div>
+              <div className="grid gap-1">
+                <Label htmlFor="name">Name</Label>
+                <Controller
+                  control={control}
+                  name="name"
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="Your name here"
+                      required
+                    />
+                  )}
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name.message}</p>
                 )}
               </div>
               <div className="grid gap-2">
@@ -97,10 +114,7 @@ export default function Register() {
               </div>
             </div>
             <div className="mt-6">
-              <Button 
-                type="submit" 
-                className="w-full cursor-pointer"
-              >
+              <Button type="submit" className="w-full cursor-pointer">
                 Register
               </Button>
             </div>
