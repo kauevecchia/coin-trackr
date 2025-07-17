@@ -20,13 +20,21 @@ export async function authenticate(request: Request, response: Response) {
       password,
     })
 
-    const accessToken = sign({ sub: user.id }, env.JWT_SECRET, {
-      expiresIn: '15m',
-    })
+    const accessToken = sign(
+      { sub: user.id, email: user.email, name: user.name },
+      env.JWT_SECRET,
+      {
+        expiresIn: "15m",
+      }
+    );
 
-    const refreshToken = sign({ sub: user.id }, env.JWT_SECRET, {
-      expiresIn: '7d',
-    })
+    const refreshToken = sign(
+      { sub: user.id, email: user.email, name: user.name },
+      env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     response.cookie('refreshToken', refreshToken, {
       path: '/',
