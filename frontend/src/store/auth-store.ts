@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios, { AxiosError } from "axios";
-import { jwtDecode } from 'jwt-decode'
+import { jwtDecode } from "jwt-decode";
 
 interface User {
   id: string;
@@ -20,12 +20,12 @@ interface AuthActions {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  checkSession: () => Promise<void>
+  checkSession: () => Promise<void>;
 }
 
 interface DecodedToken {
   sub: string;
-  email: string;
+  email?: string;
   name?: string;
   exp: number;
 }
@@ -47,7 +47,7 @@ const isTokenExpired = (token: string): boolean => {
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333",
   withCredentials: true,
-})
+});
 
 export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
   isAuthenticated: false,
@@ -57,27 +57,32 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
   accessToken: null,
 
   login: async (email, password) => {
-    set({ isLoading: true, error: null })
+    set({ isLoading: true, error: null });
     try {
-      const response = await api.post('/sessions', { email, password })
-      const { token } = response.data
+      const response = await api.post("/sessions", { email, password });
+      const { token } = response.data;
 
-      localStorage.setItem("accessToken", token)
+      localStorage.setItem("accessToken", token);
 
-      const decodedToken: DecodedToken = jwtDecode(token)
+      const decodedToken: DecodedToken = jwtDecode(token);
+
+      const userName =
+        decodedToken.name ||
+        (decodedToken.email ? decodedToken.email.split("@")[0] : "User");
+      const userEmail = decodedToken.email || email;
 
       const user: User = {
         id: decodedToken.sub,
-        email: decodedToken.email,
-        name: decodedToken.name || decodedToken.email.split("@")[0],
+        email: userEmail,
+        name: userName,
       };
 
       set({
         isAuthenticated: true,
         user,
         accessToken: token,
-        isLoading: false
-      })
+        isLoading: false,
+      });
     } catch (err) {
       const axiosError = err as AxiosError<ApiErrorResponse>;
       const errorMessage =
@@ -116,17 +121,21 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
       });
       throw err;
     }
-    
   },
 
   logout: async () => {
-    set({ isLoading: true, error: null })
+    set({ isLoading: true, error: null });
     try {
-      localStorage.removeItem("accessToken")
+      localStorage.removeItem("accessToken");
 
-      await api.post("/logout")
+      await api.post("/logout");
 
-      set({ isAuthenticated: false, user: null, accessToken: null, isLoading: false })
+      set({
+        isAuthenticated: false,
+        user: null,
+        accessToken: null,
+        isLoading: false,
+      });
     } catch (err) {
       const axiosError = err as AxiosError<ApiErrorResponse>;
       const errorMessage =
@@ -143,53 +152,66 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
   },
 
   checkSession: async () => {
-    set({ isLoading: true, error: null })
+    set({ isLoading: true, error: null });
 
     try {
-      const storedAccessToken = localStorage.getItem("accessToken")
+      const storedAccessToken = localStorage.getItem("accessToken");
 
       if (!storedAccessToken) {
-        set({ 
-          isAuthenticated: false, 
-          user: null, 
-          accessToken: null, 
-          isLoading: false 
+        set({
+          isAuthenticated: false,
+          user: null,
+          accessToken: null,
+          isLoading: false,
         });
         return;
       }
 
       if (isTokenExpired(storedAccessToken)) {
         localStorage.removeItem("accessToken");
-        set({ 
-          isAuthenticated: false, 
-          user: null, 
-          accessToken: null, 
-          isLoading: false 
+        set({
+          isAuthenticated: false,
+          user: null,
+          accessToken: null,
+          isLoading: false,
         });
         return;
       }
 
-      const decodedToken: DecodedToken = jwtDecode(storedAccessToken)
-      
+      const decodedToken: DecodedToken = jwtDecode(storedAccessToken);
+
+      const userName =
+        decodedToken.name ||
+        (decodedToken.email ? decodedToken.email.split("@")[0] : "User");
+      const userEmail = decodedToken.email || "unknown@example.com";
+
       const user: User = {
         id: decodedToken.sub,
-        email: decodedToken.email,
-        name: decodedToken.name || decodedToken.email.split("@")[0],
-      }
+        email: userEmail,
+        name: userName,
+      };
 
-      set({ isAuthenticated: true, user, accessToken: storedAccessToken })
+      set({ isAuthenticated: true, user, accessToken: storedAccessToken });
 
       try {
-        const response = await api.get("/token/refresh")
-        const { token: newAccessToken } = response.data
+        const response = await api.post("/token/refresh");
+        const { token: newAccessToken } = response.data;
 
-        localStorage.setItem("accessToken", newAccessToken)
+        localStorage.setItem("accessToken", newAccessToken);
 
         const newDecodedToken: DecodedToken = jwtDecode(newAccessToken);
+        
+        const newUserName =
+          newDecodedToken.name ||
+          (newDecodedToken.email
+            ? newDecodedToken.email.split("@")[0]
+            : "User");
+        const newuserEmail = newDecodedToken.email || "unknown@example.com";
+
         const updatedUser: User = {
           id: newDecodedToken.sub,
-          email: newDecodedToken.email,
-          name: newDecodedToken.name || newDecodedToken.email.split("@")[0],
+          email: newuserEmail,
+          name: newUserName,
         };
 
         set({
@@ -200,7 +222,10 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
         });
       } catch (refreshError) {
         set({ isLoading: false });
-        console.warn("Token refresh failed, but user remains authenticated:", refreshError);
+        console.warn(
+          "Token refresh failed, but user remains authenticated:",
+          refreshError
+        );
       }
     } catch (err) {
       localStorage.removeItem("accessToken");
@@ -216,8 +241,8 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
       });
       throw err;
     }
-  }
-}))
+  },
+}));
 
 api.interceptors.request.use(
   (config) => {
@@ -246,7 +271,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
       resolve(token);
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -255,16 +280,21 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && originalRequest.url !== '/token/refresh') {
+    if (
+      error.response?.status === 401 &&
+      originalRequest.url !== "/token/refresh"
+    ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then(token => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
-        }).catch(err => {
-          return Promise.reject(err);
-        });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
       }
 
       originalRequest._retry = true;
@@ -273,13 +303,13 @@ api.interceptors.response.use(
       try {
         await useAuthStore.getState().checkSession();
         const newToken = useAuthStore.getState().accessToken;
-        
+
         if (newToken) {
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           processQueue(null, newToken);
           return api(originalRequest);
         } else {
-          processQueue(new Error('No token available'), null);
+          processQueue(new Error("No token available"), null);
           useAuthStore.getState().logout();
           return Promise.reject(error);
         }
