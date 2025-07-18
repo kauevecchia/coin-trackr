@@ -25,13 +25,21 @@ export async function refresh(request: Request, response: Response) {
 
     const userId = decodedToken.sub as string
 
-    const newAccessToken = sign({ sub: userId }, env.JWT_SECRET, {
-      expiresIn: '15m',
-    })
+    const newAccessToken = sign(
+      { sub: userId, email: decodedToken.email, name: decodedToken.name },
+      env.JWT_SECRET,
+      {
+        expiresIn: "15m",
+      }
+    );
 
-    const newRefreshToken = sign({ sub: userId }, env.JWT_SECRET, {
-      expiresIn: '7d',
-    })
+    const newRefreshToken = sign(
+      { sub: userId, email: decodedToken.email, name: decodedToken.name },
+      env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     response.cookie('refreshToken', newRefreshToken, {
       path: '/',
