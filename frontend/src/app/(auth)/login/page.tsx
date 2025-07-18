@@ -15,8 +15,14 @@ import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormInputs, loginFormSchema } from "@/schemas/authSchemas";
+import { useAuthStore } from "@/store/auth-store";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import axios, { AxiosError } from "axios";
 
 export default function Login() {
+    const router = useRouter()
+
     const {
       control,
       handleSubmit,
@@ -31,9 +37,31 @@ export default function Login() {
       },
     });
 
-    const onSubmit = (data: LoginFormInputs) => {
-      console.log(data);
-      reset();
+    const onSubmit = async (data: LoginFormInputs) => {
+      try {
+        await useAuthStore
+          .getState()
+          .login(data.email, data.password)
+        
+        toast.success("Welcome back to Coin Trackr.")
+        
+        router.push("/dashboard")
+
+        reset()
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          const axiosError = err as AxiosError;
+          const errorMessage =
+            axiosError.response?.data?.message ||
+            "An unexpected error occurred.";
+          toast.error(errorMessage);
+        } else {
+          toast.error(
+            "An unexpected error occurred: " +
+              (err instanceof Error ? err.message : String(err))
+          );
+        }
+      }
     };
 
   return (
@@ -77,13 +105,13 @@ export default function Login() {
                 <p className="text-red-500 text-sm">{errors.password.message}</p>
               )}
             </div>
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
           </div>
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
         <Button
           variant="link"
           asChild
