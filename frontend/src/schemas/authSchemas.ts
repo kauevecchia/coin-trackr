@@ -10,7 +10,7 @@ export const loginFormSchema = z.object({
 export const registerFormSchema = z
   .object({
     email: z.string().email({ message: "Invalid email address" }),
-    name: z.string().min(3, { message: "name must be at least 3 characters" }).max(24, { message: "name must be less than 24 characters" }),
+    name: z.string().min(3, { message: "Name must be at least 3 characters" }).max(24, { message: "Name must be less than 24 characters" }),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters" }),
