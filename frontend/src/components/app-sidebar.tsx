@@ -32,12 +32,12 @@ const data = {
       icon: BarChart3,
     },
     {
-      title: "Portfólio",
+      title: "Portfolio",
       url: "/portfolio",
       icon: Wallet,
     },
     {
-      title: "Transações",
+      title: "Transactions",
       url: "/transactions",
       icon: TrendingUp,
     },
@@ -55,14 +55,14 @@ export function AppSidebar() {
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">Coin Trackr</span>
             <span className="truncate text-xs text-muted-foreground">
-              Seu portfólio crypto
+              Your crypto portfolio
             </span>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+          <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {data.navMain.map((item) => (
@@ -80,14 +80,14 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Ações Rápidas</SidebarGroupLabel>
+          <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a href="/transactions/new">
                     <PlusCircle />
-                    <span>Nova Transação</span>
+                    <span>New Transaction</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -100,13 +100,13 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton>
               <Settings />
-              <span>Configurações</span>
+              <span>Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton>
+            <SidebarMenuButton className="hover:bg-destructive/70">
               <LogOut />
-              <span>Sair</span>
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
