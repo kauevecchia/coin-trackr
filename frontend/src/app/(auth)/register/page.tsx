@@ -15,13 +15,13 @@ import Link from "next/link";
 import { RegisterFormInputs, registerFormSchema } from "@/schemas/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import axios, { AxiosError } from "axios";
 
 export default function Register() {
   const router = useRouter();
+  const { register, isLoading } = useAuth();
 
   const {
     control,
@@ -41,25 +41,14 @@ export default function Register() {
 
   const onSubmit = async (data: RegisterFormInputs) => {
     try {
-      await useAuthStore
-        .getState()
-        .register(data.name, data.email, data.password);
+      await register(data.name, data.email, data.password);
 
       toast.success("Account created successfully! Welcome to Coin Trackr.");
       reset();
       router.push("/dashboard");
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const axiosError = err as AxiosError;
-        const errorMessage =
-          axiosError.response?.data?.message || "An unexpected error occurred.";
-        toast.error(errorMessage);
-      } else {
-        toast.error(
-          "An unexpected error occurred: " +
-            (err instanceof Error ? err.message : String(err))
-        );
-      }
+      // O erro já é tratado no hook useAuth
+      console.error("Registration failed:", err);
     }
   };
 
@@ -148,9 +137,9 @@ export default function Register() {
             <Button
               type="submit"
               className="w-full cursor-pointer"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isLoading}
             >
-              Register
+              {isLoading ? "Creating account..." : "Register"}
             </Button>
           </div>
         </form>
