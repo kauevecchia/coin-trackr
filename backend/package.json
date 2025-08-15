@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev": "tsx watch src/server.ts",
+    "start:dev": "npx tsx watch src/server.ts",
     "start": "node build/server.js",
     "build": "tsup",
     "clean": "rimraf build src/generated",
@@ -11,7 +11,7 @@
     "test:watch": "vitest",
     "test:e2e": "vitest run --dir src/http",
     "test:e2e:watch": "vitest --dir src/http",
-    "run:populate-cache": "tsx src/scripts/run-populate-cache.ts"
+    "run:populate-cache": "npx tsx src/scripts/run-populate-cache.ts"
   },
   "keywords": [],
   "author": "",
