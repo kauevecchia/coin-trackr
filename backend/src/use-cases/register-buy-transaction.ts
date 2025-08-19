@@ -6,7 +6,8 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 interface RegisterBuyTransactionUseCaseRequest {
   userId: string
   cryptoSymbol: string
-  quantity: Decimal
+  cryptoQuantity: Decimal
+  usdAmount: Decimal
   unitPriceAtTransaction: Decimal
   transactionDate: Date
 }
@@ -20,7 +21,8 @@ export class RegisterBuyTransactionUseCase {
   async execute({
     userId,
     cryptoSymbol,
-    quantity,
+    cryptoQuantity,
+    usdAmount,
     unitPriceAtTransaction,
     transactionDate,
   }: RegisterBuyTransactionUseCaseRequest) {
@@ -35,7 +37,8 @@ export class RegisterBuyTransactionUseCase {
       user_id: userId,
       crypto_symbol: cryptoData.symbol,
       crypto_name: cryptoData.name,
-      quantity,
+      crypto_quantity: cryptoQuantity,
+      usd_amount: usdAmount,
       price_at_transaction: unitPriceAtTransaction,
       transaction_type: 'BUY',
       transaction_date: transactionDate,

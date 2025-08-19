@@ -6,7 +6,10 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci
+
+# Verify tsx installation
+RUN npx tsx --version
 
 # Copy source code
 COPY . .

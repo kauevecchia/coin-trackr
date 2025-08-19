@@ -30,7 +30,7 @@ services:
     ports:
       - "3333:3333"
     environment:
-      NODE_ENV: development
+      NODE_ENV: dev
       PORT: 3333
       DATABASE_URL: postgresql://docker:docker@postgres:5432/coin-tracker-pg?schema=public
       JWT_SECRET: dev-jwt-secret-key-change-in-production

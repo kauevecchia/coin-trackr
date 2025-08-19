@@ -33,7 +33,8 @@ model Transaction {
   user_id               String          
   crypto_symbol         String          
   crypto_name           String          
-  quantity              Decimal         @db.Decimal(24, 10) 
+  crypto_quantity       Decimal         @db.Decimal(24, 10) 
+  usd_amount            Decimal         @db.Decimal(24, 10)
   price_at_transaction  Decimal         @db.Decimal(24, 10)
   transaction_type      TransactionType 
   transaction_date      DateTime        @default(now())

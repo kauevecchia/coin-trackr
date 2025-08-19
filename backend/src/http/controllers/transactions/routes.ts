@@ -11,7 +11,7 @@ transactionsRoutes.use(verifyJWT)
 
 transactionsRoutes.post('/transactions/buy', registerBuyTransaction)
 transactionsRoutes.post('/transactions/sell', registerSellTransaction)
-transactionsRoutes.post('/transactions/delete', deleteTransaction)
+transactionsRoutes.delete('/transactions/delete', deleteTransaction)
 transactionsRoutes.get('/transactions/list', listUserTransactions)
 
 export { transactionsRoutes }

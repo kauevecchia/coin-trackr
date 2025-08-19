@@ -26,8 +26,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         email: user.email,
       }
     : {
-        name: 'Usuário',
-        email: 'carregando...',
+        name: 'User',
+        email: 'Loading...',
       }
 
   return (
@@ -35,7 +35,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary-glow">
-            <ChartCandlestick className="h-6 w-6 text-primary-foreground dark:text-foreground" />
+            <ChartCandlestick className="h-6 w-6 text-muted dark:text-foreground" />
           </div>
           <span className="text-xl font-bold text-primary dark:text-primary-glow">
             CoinTrackr
