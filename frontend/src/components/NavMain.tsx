@@ -16,6 +16,8 @@ import {
 } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { NewTransactionModal } from './NewTransactionModal'
 
 const data = {
   navMain: [
@@ -39,9 +41,11 @@ const data = {
 
 export function NavMain() {
   const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <SidebarGroup>
+      <NewTransactionModal isOpen={isOpen} onOpenChange={setIsOpen} />
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {data.navMain.map((item) => (
@@ -60,8 +64,8 @@ export function NavMain() {
         <SidebarMenuItem className="flex items-center gap-2">
           <SidebarMenuButton
             tooltip="Quick Create"
-            className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground dark:text-foreground hover:text-primary-foreground hover:scale-[1.03] transition-all cursor-pointer min-w-8 duration-200 ease-linear"
-            onClick={() => router.push('/transactions/new')}
+            className="bg-gradient-to-r from-primary to-primary-glow text-muted dark:text-foreground hover:text-muted hover:scale-[1.03] transition-all cursor-pointer min-w-8 duration-200 ease-linear"
+            onClick={() => setIsOpen(true)}
           >
             <CirclePlus />
             <span className="font-medium">New Transaction</span>
