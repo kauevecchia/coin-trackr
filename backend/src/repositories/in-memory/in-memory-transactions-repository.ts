@@ -16,7 +16,8 @@ export class InMemoryTransactionsRepository implements TransactionsRepository {
       user_id: data.user_id,
       crypto_symbol: data.crypto_symbol,
       crypto_name: data.crypto_name,
-      quantity: new Decimal(data.quantity.toString()),
+      crypto_quantity: new Decimal(data.crypto_quantity.toString()),
+      usd_amount: new Decimal(data.usd_amount.toString()),
       price_at_transaction: new Decimal(data.price_at_transaction.toString()),
       transaction_type: data.transaction_type,
       transaction_date: data.transaction_date

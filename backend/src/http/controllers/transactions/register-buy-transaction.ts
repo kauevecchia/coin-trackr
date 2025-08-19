@@ -9,14 +9,15 @@ export async function registerBuyTransaction(
 ) {
   const registerBuyTransactionBodySchema = z.object({
     cryptoSymbol: z.string(),
-    quantity: z.coerce.number().transform((value) => new Decimal(value)),
+    cryptoQuantity: z.coerce.number().transform((value) => new Decimal(value)),
+    usdAmount: z.coerce.number().transform((value) => new Decimal(value)),
     unitPriceAtTransaction: z.coerce
       .number()
       .transform((value) => new Decimal(value)),
     transactionDate: z.coerce.date().transform((value) => new Date(value)),
   })
 
-  const { cryptoSymbol, quantity, unitPriceAtTransaction, transactionDate } =
+  const { cryptoSymbol, cryptoQuantity, usdAmount, unitPriceAtTransaction, transactionDate } =
     registerBuyTransactionBodySchema.parse(request.body)
 
   const userId = request.user?.id
@@ -25,15 +26,33 @@ export async function registerBuyTransaction(
     return response.status(401).json({ message: 'User not authenticated' })
   }
 
-  const registerBuyTransaction = makeRegisterBuyTransactionUseCase()
+  try {
+    const registerBuyTransaction = makeRegisterBuyTransactionUseCase()
 
-  await registerBuyTransaction.execute({
-    userId,
-    cryptoSymbol,
-    quantity,
-    unitPriceAtTransaction,
-    transactionDate,
-  })
+    const { transaction } = await registerBuyTransaction.execute({
+      userId,
+      cryptoSymbol,
+      cryptoQuantity,
+      usdAmount,
+      unitPriceAtTransaction,
+      transactionDate,
+    })
 
-  return response.status(201).send()
+    return response.status(201).json({ 
+      message: 'Transaction created successfully',
+      transaction: {
+        id: transaction.id,
+        cryptoSymbol: transaction.crypto_symbol,
+        cryptoName: transaction.crypto_name,
+        cryptoQuantity: transaction.crypto_quantity.toString(),
+        usdAmount: transaction.usd_amount.toString(),
+        priceAtTransaction: transaction.price_at_transaction.toString(),
+        transactionType: transaction.transaction_type,
+        transactionDate: transaction.transaction_date,
+      }
+    })
+  } catch (error) {
+    console.error('Error creating transaction:', error)
+    return response.status(500).json({ message: 'Failed to create transaction' })
+  }
 }
