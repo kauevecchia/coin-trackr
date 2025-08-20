@@ -48,7 +48,7 @@ export async function registerSellTransaction(
   try {
     const registerSellTransaction = makeRegisterSellTransactionUseCase()
 
-    await registerSellTransaction.execute({
+    const { transaction } = await registerSellTransaction.execute({
       userId,
       cryptoSymbol,
       quantity,
@@ -56,7 +56,21 @@ export async function registerSellTransaction(
       transactionDate,
     })
 
-    return response.status(201).send()
+    return response.status(201).json({ 
+      message: 'Transaction created successfully',
+      transaction: {
+        id: transaction.id,
+        crypto_symbol: transaction.crypto_symbol,
+        crypto_name: transaction.crypto_name,
+        crypto_quantity: transaction.crypto_quantity.toString(),
+        usd_amount: transaction.usd_amount.toString(),
+        price_at_transaction: transaction.price_at_transaction.toString(),
+        transaction_type: transaction.transaction_type,
+        transaction_date: transaction.transaction_date,
+        created_at: transaction.created_at,
+        updated_at: transaction.updated_at,
+      }
+    })
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return response.status(404).json({ message: 'Crypto not found' })
