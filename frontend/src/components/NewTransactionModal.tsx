@@ -7,11 +7,17 @@ import { CryptoSelector } from "./CryptoSelector";
 import { useState, useEffect } from "react";
 import { Label } from "./ui/label";
 import { useTransactionCalculation } from "@/hooks/useTransactionCalculation";
-import { transactionsService } from "@/services/transactions.service";
+import { useTransactionsContext } from "@/contexts/TransactionsContext";
 import { toast } from "sonner";
 
-export const NewTransactionModal = ({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChange: (open: boolean) => void }) => {
+interface NewTransactionModalProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export const NewTransactionModal = ({ isOpen, onOpenChange }: NewTransactionModalProps) => {
   const { cryptos, isLoading, error } = useCrypto();
+  const { createBuyTransaction, createSellTransaction } = useTransactionsContext();
   const [selectedCrypto, setSelectedCrypto] = useState<string>("");
   const [transactionType, setTransactionType] = useState<string>("");
   const [transactionDate, setTransactionDate] = useState<string>(
@@ -65,12 +71,13 @@ export const NewTransactionModal = ({ isOpen, onOpenChange }: { isOpen: boolean,
 
       let response;
       if (transactionType === 'BUY') {
-        response = await transactionsService.createBuyTransaction(transactionData);
+        response = await createBuyTransaction(transactionData);
       } else {
-        response = await transactionsService.createSellTransaction(transactionData);
+        response = await createSellTransaction(transactionData);
       }
 
       toast.success(response.message);
+      resetForm();
       onOpenChange(false);
       
     } catch (error) {
