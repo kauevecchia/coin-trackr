@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect, useCallback } from "react";
 import { authService, User } from "../services/auth.service";
 
@@ -64,7 +66,6 @@ export const useAuth = () => {
     
     try {
       await authService.register(name, email, password);
-      // Após o registro, faz login automaticamente
       await login(email, password);
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Registration failed.";
@@ -84,7 +85,6 @@ export const useAuth = () => {
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Logout failed.";
       setError(errorMessage);
-      // Mesmo com erro, limpa o estado local
       setUnauthenticated();
       throw error;
     }
@@ -111,13 +111,11 @@ export const useAuth = () => {
       const user = authService.getUserFromToken(storedToken);
       setAuthenticated(user);
 
-      // Tenta fazer refresh do token
       try {
         const { user: refreshedUser } = await authService.refreshToken();
         setAuthenticated(refreshedUser);
       } catch (refreshError) {
         console.warn("Token refresh failed, but user remains authenticated:", refreshError);
-        // Mantém o usuário autenticado mesmo se o refresh falhar
         setLoading(false);
       }
     } catch (error: any) {
@@ -129,7 +127,6 @@ export const useAuth = () => {
     }
   }, []);
 
-  // Verifica a sessão quando o hook é inicializado
   useEffect(() => {
     checkSession();
   }, [checkSession]);

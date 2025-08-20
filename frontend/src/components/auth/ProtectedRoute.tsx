@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
+'use client'
+
+import { ReactNode, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -29,7 +30,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!isAuthenticated) {
-    return null; // Não renderiza nada enquanto redireciona
+    return null;
   }
 
   return <>{children}</>;
