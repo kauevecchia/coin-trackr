@@ -12,39 +12,16 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { useFormatters } from "@/hooks/useFormatters";
 
 interface PortfolioTableProps {
   portfolio: PortfolioCrypto[];
   isLoading?: boolean;
+  onCryptoClick?: (cryptoSymbol: string) => void;
 }
 
-export function PortfolioTable({ portfolio, isLoading = false }: PortfolioTableProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
-
-  const formatCrypto = (value: number, symbol: string) => {
-    return `${value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 8,
-    })} ${symbol}`;
-  };
-
-  const formatPercentage = (value: number) => {
-    const sign = value >= 0 ? '+' : '';
-    return `${sign}${value.toFixed(2)}%`;
-  };
-
-  const getPnLColorClass = (value: number) => {
-    if (value > 0) return 'text-green-600 dark:text-green-400';
-    if (value < 0) return 'text-red-600 dark:text-red-400 bg-red-500/10';
-    return 'text-gray-600 dark:text-gray-400';
-  };
+export function PortfolioTable({ portfolio, isLoading = false, onCryptoClick }: PortfolioTableProps) {
+  const { formatCurrency, formatCrypto, formatPercentage, getPnLColorClass } = useFormatters();
 
   if (isLoading) {
     return (
@@ -133,7 +110,11 @@ export function PortfolioTable({ portfolio, isLoading = false }: PortfolioTableP
             </TableHeader>
             <TableBody>
               {portfolio.map((crypto) => (
-                <TableRow key={crypto.symbol}>
+                <TableRow 
+                  key={crypto.symbol}
+                  className={onCryptoClick ? "cursor-pointer hover:bg-muted/50 transition-colors" : ""}
+                  onClick={() => onCryptoClick?.(crypto.symbol)}
+                >
                   <TableCell>
                     <div className="flex items-center space-x-3">
                       {crypto.image_url && (
