@@ -42,9 +42,9 @@ export class RegisterSellTransactionUseCase {
     let currentBalance = new Decimal(0)
     for (const transactions of userTransactionsForCrypto) {
       if (transactions.transaction_type === TransactionType.BUY) {
-        currentBalance = currentBalance.plus(transactions.quantity)
+        currentBalance = currentBalance.plus(transactions.crypto_quantity)
       } else {
-        currentBalance = currentBalance.minus(transactions.quantity)
+        currentBalance = currentBalance.minus(transactions.crypto_quantity)
       }
     }
 
@@ -56,7 +56,8 @@ export class RegisterSellTransactionUseCase {
       user_id: userId,
       crypto_symbol: cryptoData.symbol,
       crypto_name: cryptoData.name,
-      quantity,
+      crypto_quantity: quantity,
+      usd_amount: quantity.mul(unitPriceAtTransaction),
       price_at_transaction: unitPriceAtTransaction,
       transaction_type: TransactionType.SELL,
       transaction_date: transactionDate,

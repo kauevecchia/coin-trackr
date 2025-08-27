@@ -11,7 +11,8 @@ export async function registerSellTransaction(
 ) {
   const registerSellTransactionBodySchema = z.object({
     cryptoSymbol: z.string(),
-    quantity: z.coerce.number().transform((value) => new Decimal(value)),
+    cryptoQuantity: z.coerce.number().transform((value) => new Decimal(value)),
+    usdAmount: z.coerce.number().transform((value) => new Decimal(value)),
     unitPriceAtTransaction: z.coerce
       .number()
       .transform((value) => new Decimal(value)),
@@ -19,14 +20,16 @@ export async function registerSellTransaction(
   })
 
   let cryptoSymbol: string
-  let quantity: Decimal
+  let cryptoQuantity: Decimal
+  let usdAmount: Decimal
   let unitPriceAtTransaction: Decimal
   let transactionDate: Date
 
   try {
     const result = registerSellTransactionBodySchema.parse(request.body)
     cryptoSymbol = result.cryptoSymbol
-    quantity = result.quantity
+    cryptoQuantity = result.cryptoQuantity
+    usdAmount = result.usdAmount
     unitPriceAtTransaction = result.unitPriceAtTransaction
     transactionDate = result.transactionDate
   } catch (err) {
@@ -51,7 +54,7 @@ export async function registerSellTransaction(
     const { transaction } = await registerSellTransaction.execute({
       userId,
       cryptoSymbol,
-      quantity,
+      quantity: cryptoQuantity,
       unitPriceAtTransaction,
       transactionDate,
     })
