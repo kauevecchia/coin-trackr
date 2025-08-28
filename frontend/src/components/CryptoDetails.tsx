@@ -3,32 +3,33 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Trash2 } from "lucide-react"
+import { Banknote, Calculator, DollarSign, Trash2, TrendingUp, Wallet } from "lucide-react"
 import Image from "next/image"
 import { useFormatters } from "@/hooks/useFormatters"
 import { usePortfolio } from "@/hooks/usePortfolio"
-import { useTransactions } from "@/hooks/useTransactions"
+import { useTransactionsContext } from "@/contexts/TransactionsContext"
 import { Transaction } from "@/services/transactions.service"
 import { CryptoDetails as CryptoDetailsType } from "@/services/crypto.service"
+import DeleteTransactionModal from "@/components/DeleteTransactionModal"
+import { useState } from "react"
+import { toast } from "sonner"
 
 interface CryptoDetailsProps {
   cryptoSymbol: string;
-  transactions: Transaction[];
   cryptoDetails: CryptoDetailsType[];
-  onTransactionClick?: (transaction: Transaction) => void;
 }
 
-export const CryptoDetails = ({ cryptoSymbol, transactions, cryptoDetails, onTransactionClick }: CryptoDetailsProps) => {
+export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProps) => {
   const { formatCurrency, formatCrypto, formatPercentage, getPnLColorClass } = useFormatters()
-  const { deleteTransaction } = useTransactions()
+  const { transactions, deleteTransaction, isLoading } = useTransactionsContext()
   
-  // Usar o hook usePortfolio para obter todo o portfólio
   const portfolio = usePortfolio(transactions, cryptoDetails)
   
-  // Filtrar apenas a criptomoeda específica
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null)
+
   const selectedCrypto = portfolio.find(crypto => crypto.symbol === cryptoSymbol)
   
-  // Se não encontrar a cripto no portfólio, mostrar estado vazio
   if (!selectedCrypto) {
     return (
       <div className="space-y-6">
@@ -43,43 +44,50 @@ export const CryptoDetails = ({ cryptoSymbol, transactions, cryptoDetails, onTra
     )
   }
 
-  // Função para calcular lucro/prejuízo de uma transação específica
+  const handleDeleteTransaction = (transactionId: string) => {
+    setTransactionToDelete(transactionId)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!transactionToDelete) return
+    
+    try {
+      await deleteTransaction(transactionToDelete)
+      toast.success("Transaction deleted successfully!")
+      setIsDeleteModalOpen(false)
+      setTransactionToDelete(null)
+    } catch {
+      toast.error("Failed to delete transaction. Please try again.")
+    }
+  }
+
+  const handleCloseModal = () => {
+    setIsDeleteModalOpen(false)
+    setTransactionToDelete(null)
+  }
+
   const calculateTransactionPnL = (transaction: Transaction) => {
     const transactionPrice = parseFloat(transaction.price_at_transaction)
     const quantity = parseFloat(transaction.crypto_quantity)
     const currentPrice = selectedCrypto.currentPrice
     
     if (transaction.transaction_type === 'BUY') {
-      // Para compras: lucro = (preço atual - preço da compra) * quantidade
+      // For BUY transactions, calculate unrealized P&L based on current price
       const pnl = (currentPrice - transactionPrice) * quantity
       const pnlPercentage = ((currentPrice - transactionPrice) / transactionPrice) * 100
       const finalBalance = parseFloat(transaction.usd_amount) + pnl
       return { pnl, pnlPercentage, finalBalance }
     } else {
-      // Para vendas: lucro = (preço da venda - preço médio de compra) * quantidade
-      // Como não temos o preço médio de compra facilmente disponível, 
-      // vamos usar o preço da transação como referência
-      const pnl = (transactionPrice - currentPrice) * quantity
-      const pnlPercentage = ((transactionPrice - currentPrice) / currentPrice) * 100
-      const finalBalance = parseFloat(transaction.usd_amount) + pnl
-      return { pnl, pnlPercentage, finalBalance }
-    }
-  }
-
-  // Função para deletar transação
-  const handleDeleteTransaction = async (transactionId: string) => {
-    if (confirm("Tem certeza que deseja deletar esta transação?")) {
-      try {
-        await deleteTransaction(transactionId)
-      } catch (error) {
-        console.error("Failed to delete transaction:", error)
-      }
+      // For SELL transactions, don't calculate P&L as it's already realized
+      // The final balance is just the amount received from the sale
+      const finalBalance = parseFloat(transaction.usd_amount)
+      return { pnl: 0, pnlPercentage: 0, finalBalance }
     }
   }
 
   return (
     <div className="space-y-6">
-      {/* Header com informações da criptomoeda */}
       <div className="flex items-center space-x-4 mb-6">
         {selectedCrypto.image_url && (
           <div className="relative h-12 w-12">
@@ -91,42 +99,55 @@ export const CryptoDetails = ({ cryptoSymbol, transactions, cryptoDetails, onTra
             />
           </div>
         )}
-        <div>
-          <h1 className="text-2xl font-bold">{selectedCrypto.name}</h1>
-          <p className="text-muted-foreground">{selectedCrypto.symbol.toUpperCase()}</p>
-        </div>
-        <div className="ml-auto text-right">
-          <div className="text-sm text-muted-foreground">Current Price</div>
-          <div className="text-xl font-bold">{formatCurrency(selectedCrypto.currentPrice)}</div>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-center gap-2">
+            <h1 className="text-2xl font-bold">{selectedCrypto.name}</h1>
+            <p className="text-muted-foreground px-2 py-1 rounded-2xl bg-muted">{selectedCrypto.symbol.toUpperCase()}</p>
+          </div>
+          <div>
+            <div className="text-2xl font-bold">{formatCurrency(selectedCrypto.currentPrice)}</div>
+          </div>
         </div>
       </div>
 
-      {/* Cards de resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm font-medium text-muted-foreground">Holdings</div>
-            <div className="text-2xl font-bold">{formatCrypto(selectedCrypto.quantity, selectedCrypto.symbol.toUpperCase())}</div>
+      <div className="flex flex-col md:flex-row flex-grow gap-4">
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Holdings</CardTitle>
+            <Wallet className="size-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-semibold">{formatCrypto(selectedCrypto.quantity, selectedCrypto.symbol.toUpperCase())}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm font-medium text-muted-foreground">Total Invested</div>
-            <div className="text-2xl font-bold">{formatCurrency(selectedCrypto.totalInvested)}</div>
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-muted-foreground font-normal">Total Invested</CardTitle>
+              <DollarSign className="size-5 text-muted-foreground" />
+            </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-semibold">{formatCurrency(selectedCrypto.totalInvested)}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm font-medium text-muted-foreground">Current Value</div>
-            <div className="text-2xl font-bold">{formatCurrency(selectedCrypto.currentValue)}</div>
+
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Current Value</CardTitle>
+            <Banknote className="size-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-semibold">{formatCurrency(selectedCrypto.currentValue)}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm font-medium text-muted-foreground">Unrealized P&L</div>
-            <div className={`text-2xl font-bold flex items-center gap-2 ${getPnLColorClass(selectedCrypto.unrealizedPnL)}`}>
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Unrealized P&L</CardTitle>
+            <TrendingUp className="size-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-semibold flex items-center gap-2 ${getPnLColorClass(selectedCrypto.unrealizedPnL)}`}>
               {formatCurrency(selectedCrypto.unrealizedPnL)} 
-              <span className={`text-sm px-2 py-0.5 rounded-xl bg-opacity-10 ${
+              <span className={`text-sm px-1.5 py-0.5 rounded-lg bg-opacity-10 ${
                       selectedCrypto.unrealizedPnL > 0 
                         ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                         : selectedCrypto.unrealizedPnL < 0 
@@ -136,12 +157,20 @@ export const CryptoDetails = ({ cryptoSymbol, transactions, cryptoDetails, onTra
             </div>
           </CardContent>
         </Card>
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Average Cost</CardTitle>
+            <Calculator className="size-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-semibold">{formatCurrency(selectedCrypto.averageCost)}</div>
+          </CardContent>
+        </Card>
       </div>
     
-      {/* Tabela de transações específicas da criptomoeda */}
       <Card>
         <CardHeader>
-          <CardTitle>Transaction History - {selectedCrypto.name}</CardTitle>
+          <CardTitle>Transaction History - {selectedCrypto.symbol}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -168,8 +197,7 @@ export const CryptoDetails = ({ cryptoSymbol, transactions, cryptoDetails, onTra
                   return (
                     <TableRow 
                       key={transaction.id}
-                      className={`${onTransactionClick ? 'cursor-pointer hover:bg-muted/50 transition-colors' : ''}`}
-                      onClick={() => onTransactionClick?.(transaction)}
+                      className={transaction.transaction_type === 'SELL' ? 'bg-red-50 dark:bg-red-950/20' : ''}
                     >
                       <TableCell>
                         {new Date(transaction.transaction_date).toLocaleDateString()}
@@ -193,26 +221,38 @@ export const CryptoDetails = ({ cryptoSymbol, transactions, cryptoDetails, onTra
                         {formatCrypto(parseFloat(transaction.crypto_quantity), selectedCrypto.symbol.toUpperCase())}
                       </TableCell>
                       <TableCell className="text-right font-mono font-medium">
-                        <span className={`inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md ${
-                          pnl > 0 
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
-                            : pnl < 0 
-                            ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
-                        }`}>
-                          {formatCurrency(pnl)}
-                        </span>
+                        {transaction.transaction_type === 'SELL' ? (
+                          <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                            $0.00
+                          </span>
+                        ) : (
+                          <span className={`inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md ${
+                            pnl > 0 
+                              ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                              : pnl < 0 
+                              ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                          }`}>
+                            {formatCurrency(pnl)}
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell className="text-right font-mono font-medium">
-                        <span className={`inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md ${
-                      pnlPercentage > 0 
-                        ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
-                        : pnlPercentage < 0 
-                        ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
-                          }`}>
-                          {formatPercentage(pnlPercentage)}
-                        </span>
+                        {transaction.transaction_type === 'SELL' ? (
+                          <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                            0.00%
+                          </span>
+                        ) : (
+                          <span className={`inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md ${
+                        pnlPercentage > 0 
+                          ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                          : pnlPercentage < 0 
+                          ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                            }`}>
+                            {formatPercentage(pnlPercentage)}
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell className="text-right font-mono font-medium">
                         {formatCurrency(finalBalance)}
@@ -244,36 +284,12 @@ export const CryptoDetails = ({ cryptoSymbol, transactions, cryptoDetails, onTra
         </CardContent>
       </Card>
 
-      {/* Card de resumo adicional */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Portfolio Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <div className="text-sm text-muted-foreground">Average Cost</div>
-              <div className="text-lg font-semibold">{formatCurrency(selectedCrypto.averageCost)}</div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Current Price</div>
-              <div className="text-lg font-semibold">{formatCurrency(selectedCrypto.currentPrice)}</div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Price Change</div>
-              <div className={`text-lg font-semibold ${getPnLColorClass(selectedCrypto.currentPrice - selectedCrypto.averageCost)}`}>
-                {formatCurrency(selectedCrypto.currentPrice - selectedCrypto.averageCost)}
-              </div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Total Return</div>
-              <div className={`text-lg font-semibold ${getPnLColorClass(selectedCrypto.unrealizedPnL)}`}>
-                {formatPercentage(selectedCrypto.unrealizedPnLPercentage)}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <DeleteTransactionModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        isLoading={isLoading}
+      />
     </div>
   )
 }
