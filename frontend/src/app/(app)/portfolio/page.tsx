@@ -3,10 +3,13 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useTransactionsContext } from "@/contexts/TransactionsContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { useCrypto } from "@/hooks/useCrypto";
 import { PortfolioTable } from "@/components/PortfolioTable";
+import { CryptoDetails } from "@/components/CryptoDetails";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function Portfolio() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -18,6 +21,8 @@ export default function Portfolio() {
   } = useTransactionsContext();
   const { cryptos, isLoading: cryptoLoading, error: cryptoError } = useCrypto();
   const portfolio = usePortfolio(transactions, cryptos);
+
+  const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -70,6 +75,47 @@ export default function Portfolio() {
 
   const isLoading = transactionsLoading || cryptoLoading;
 
+  const handleCryptoClick = (cryptoSymbol: string) => {
+    setSelectedCrypto(cryptoSymbol);
+  };
+
+  const handleBackToPortfolio = () => {
+    setSelectedCrypto(null);
+  };
+
+  if (selectedCrypto) {
+    const crypto = portfolio.find(p => p.symbol === selectedCrypto);
+    
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col items-start gap-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleBackToPortfolio}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Portfolio
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">
+              {crypto ? `${crypto.name} Details` : `${selectedCrypto.toUpperCase()} Details`}
+            </h1>
+            <p className="text-muted-foreground">
+              Detailed view of your {selectedCrypto.toUpperCase()} holdings
+            </p>
+          </div>
+        </div>
+
+        <CryptoDetails 
+          cryptoSymbol={selectedCrypto}
+          cryptoDetails={cryptos || []}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -82,6 +128,7 @@ export default function Portfolio() {
       <PortfolioTable 
         portfolio={portfolio} 
         isLoading={isLoading}
+        onCryptoClick={handleCryptoClick}
       />
     </div>
   );
