@@ -40,19 +40,35 @@ export const usePortfolio = (transactions: Transaction[], cryptoDetails: CryptoD
 
       let totalQuantity = 0;
       let totalInvested = 0;
+      let totalQuantityBought = 0;
+      let totalInvestedBought = 0;
 
+      // First, calculate total bought
       cryptoTransactions.forEach(transaction => {
         const quantity = parseFloat(transaction.crypto_quantity);
         const usdAmount = parseFloat(transaction.usd_amount);
 
         if (transaction.transaction_type === 'BUY') {
-          totalQuantity += quantity;
-          totalInvested += usdAmount;
-        } else if (transaction.transaction_type === 'SELL') {
-          totalQuantity -= quantity;
-          totalInvested -= usdAmount;
+          totalQuantityBought += quantity;
+          totalInvestedBought += usdAmount;
         }
       });
+
+      // Then calculate current holdings
+      totalQuantity = totalQuantityBought;
+      cryptoTransactions.forEach(transaction => {
+        const quantity = parseFloat(transaction.crypto_quantity);
+
+        if (transaction.transaction_type === 'SELL') {
+          totalQuantity -= quantity;
+        }
+      });
+
+      // Calculate invested amount for remaining holdings (proportional to what is left)
+      if (totalQuantityBought > 0) {
+        const remainingRatio = totalQuantity / totalQuantityBought;
+        totalInvested = totalInvestedBought * remainingRatio;
+      }
 
       if (totalQuantity <= 0) {
         return null;
