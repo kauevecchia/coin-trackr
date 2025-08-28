@@ -9,6 +9,7 @@ import { Label } from "./ui/label";
 import { useTransactionCalculation } from "@/hooks/useTransactionCalculation";
 import { useTransactionsContext } from "@/contexts/TransactionsContext";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 interface NewTransactionModalProps {
   isOpen: boolean;
@@ -81,8 +82,13 @@ export const NewTransactionModal = ({ isOpen, onOpenChange }: NewTransactionModa
       onOpenChange(false);
       
     } catch (error) {
-      console.error('Error creating transaction:', error);
-      toast.error('Failed to create transaction. Please try again.');
+      if (error instanceof AxiosError) {
+        const message = error.response?.data?.message || 'Unknown error occurred';
+        toast.error(message);
+      } else {
+        toast.error('Failed to create transaction. Please try again.');
+      }
+
     } finally {
       setIsSubmitting(false);
     }
