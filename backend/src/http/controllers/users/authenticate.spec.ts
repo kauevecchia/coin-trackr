@@ -72,7 +72,7 @@ describe('Authenticate (e2e)', () => {
       password: 'wrongpassword',
     })
 
-    expect(response.statusCode).toEqual(400)
+    expect(response.statusCode).toEqual(401)
     expect(response.body).toEqual({
       message: 'Invalid credentials',
     })
@@ -84,7 +84,7 @@ describe('Authenticate (e2e)', () => {
       password: 'anypassword',
     })
 
-    expect(response.statusCode).toEqual(400)
+    expect(response.statusCode).toEqual(401)
     expect(response.body).toEqual({
       message: 'Invalid credentials',
     })

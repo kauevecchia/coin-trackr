@@ -46,8 +46,11 @@ export async function authenticate(request: Request, response: Response) {
 
     return response.status(200).json({ token: accessToken })
   } catch (err) {
+    if (err instanceof z.ZodError) {
+      return response.status(400).json({ message: 'Validation error', errors: err.errors })
+    }
     if (err instanceof InvalidCredentialsError) {
-      return response.status(400).json({ message: err.message })
+      return response.status(401).json({ message: err.message })
     }
     return response.status(500).json({ message: 'Internal server error.' })
   }
