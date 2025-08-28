@@ -7,14 +7,16 @@ import { usePortfolio } from "@/hooks/usePortfolio";
 import { useTransactionsContext } from "@/contexts/TransactionsContext";
 import { useCrypto } from "@/hooks/useCrypto";
 import { Button } from "@/components/ui/button";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, DollarSign, Banknote, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { NewTransactionModal } from "@/components/NewTransactionModal";
+import { useFormatters } from "@/hooks/useFormatters";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { transactions, isLoading: transactionsLoading, fetchTransactions } = useTransactionsContext();
   const { cryptos: cryptoDetails, isLoading: cryptoLoading } = useCrypto();
+  const { formatCurrency, formatPercentage, getPnLColorClass } = useFormatters();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -28,6 +30,7 @@ export default function Dashboard() {
   const totalInvested = portfolio.reduce((acc, crypto) => acc + crypto.totalInvested, 0);
   const totalValue = portfolio.reduce((acc, crypto) => acc + crypto.currentValue, 0);
   const totalPnL = totalValue - totalInvested;
+  const totalPnLPercentage = totalInvested > 0 ? (totalPnL / totalInvested) * 100 : 0;
 
   if (isLoading || transactionsLoading || cryptoLoading) {
     return (
@@ -61,42 +64,43 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 flex-grow">
+      <div className="flex flex-col md:flex-row flex-grow gap-4">
         <Card className="flex-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Investment</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Total Invested</CardTitle>
+            <DollarSign className="size-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalInvested.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">
-              Total amount invested in cryptocurrencies
-            </p>
+            <div className="text-2xl font-semibold">{formatCurrency(totalInvested)}</div>
           </CardContent>
         </Card>
 
         <Card className="flex-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Current Value</CardTitle>
+            <Banknote className="size-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalValue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">
-              Current value of your portfolio
-            </p>
+            <div className="text-2xl font-semibold">{formatCurrency(totalValue)}</div>
           </CardContent>
         </Card>
 
         <Card className="flex-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Profit</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Unrealized P&L</CardTitle>
+            <TrendingUp className="size-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(2)}
+            <div className={`text-2xl font-semibold flex items-center gap-2 ${getPnLColorClass(totalPnL)}`}>
+              {formatCurrency(totalPnL)} 
+              <span className={`text-sm px-1.5 py-0.5 rounded-lg bg-opacity-10 ${
+                      totalPnL > 0 
+                        ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                        : totalPnL < 0 
+                        ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                    } ${getPnLColorClass(totalPnLPercentage)}`}>{formatPercentage(totalPnLPercentage)}</span>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Total unrealized profit/loss
-            </p>
           </CardContent>
         </Card>
       </div>
