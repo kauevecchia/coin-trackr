@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, DollarSign, Banknote, TrendingUp } from "lucide-react";
 import { useFormatters } from "@/hooks/useFormatters";
 
 interface PortfolioTableProps {
@@ -65,26 +65,40 @@ export function PortfolioTable({ portfolio, isLoading = false, onCryptoClick }: 
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-4 flex-grow">
+      <div className="flex flex-col md:flex-row flex-grow gap-4">
         <Card className="flex-1">
-          <CardContent className="p-4">
-            <div className="text-sm font-medium text-muted-foreground">Total Invested</div>
-            <div className="text-2xl font-bold">{formatCurrency(totalInvested)}</div>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Total Invested</CardTitle>
+            <DollarSign className="size-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-semibold">{formatCurrency(totalInvested)}</div>
           </CardContent>
         </Card>
         <Card className="flex-1">
-          <CardContent className="p-4">
-            <div className="text-sm font-medium text-muted-foreground">Total Portfolio Value</div>
-            <div className="text-2xl font-bold">{formatCurrency(totalPortfolioValue)}</div>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Current Value</CardTitle>
+            <Banknote className="size-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-semibold">{formatCurrency(totalPortfolioValue)}</div>
           </CardContent>
         </Card>
-        
         <Card className="flex-1">
-          <CardContent className="p-4">
-            <div className="text-sm font-medium text-muted-foreground">Unrealized P&L</div>
-            <div className={`text-2xl font-bold flex items-center gap-2 ${getPnLColorClass(totalUnrealizedPnL)}`}>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-muted-foreground font-normal">Unrealized P&L</CardTitle>
+            <TrendingUp className="size-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-semibold flex items-center gap-2 ${getPnLColorClass(totalUnrealizedPnL)}`}>
               {formatCurrency(totalUnrealizedPnL)} 
-              <span className="text-sm px-2 py-0.5 rounded-xl bg-primary-glow/10">{formatPercentage(totalUnrealizedPnLPercentage)}</span>
+              <span className={`text-sm px-1.5 py-0.5 rounded-lg bg-opacity-10 ${
+                      totalUnrealizedPnL > 0 
+                        ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                        : totalUnrealizedPnL < 0 
+                        ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                    } ${getPnLColorClass(totalUnrealizedPnLPercentage)}`}>{formatPercentage(totalUnrealizedPnLPercentage)}</span>
             </div>
           </CardContent>
         </Card>
