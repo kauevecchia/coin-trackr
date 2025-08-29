@@ -47,7 +47,6 @@ export default function Register() {
       reset();
       router.push("/dashboard");
     } catch (err) {
-      // O erro já é tratado no hook useAuth
       console.error("Registration failed:", err);
     }
   };

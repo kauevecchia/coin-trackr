@@ -11,7 +11,8 @@ export async function registerSellTransaction(
 ) {
   const registerSellTransactionBodySchema = z.object({
     cryptoSymbol: z.string(),
-    quantity: z.coerce.number().transform((value) => new Decimal(value)),
+    cryptoQuantity: z.coerce.number().transform((value) => new Decimal(value)),
+    usdAmount: z.coerce.number().transform((value) => new Decimal(value)),
     unitPriceAtTransaction: z.coerce
       .number()
       .transform((value) => new Decimal(value)),
@@ -19,14 +20,16 @@ export async function registerSellTransaction(
   })
 
   let cryptoSymbol: string
-  let quantity: Decimal
+  let cryptoQuantity: Decimal
+  let usdAmount: Decimal
   let unitPriceAtTransaction: Decimal
   let transactionDate: Date
 
   try {
     const result = registerSellTransactionBodySchema.parse(request.body)
     cryptoSymbol = result.cryptoSymbol
-    quantity = result.quantity
+    cryptoQuantity = result.cryptoQuantity
+    usdAmount = result.usdAmount
     unitPriceAtTransaction = result.unitPriceAtTransaction
     transactionDate = result.transactionDate
   } catch (err) {
@@ -48,15 +51,29 @@ export async function registerSellTransaction(
   try {
     const registerSellTransaction = makeRegisterSellTransactionUseCase()
 
-    await registerSellTransaction.execute({
+    const { transaction } = await registerSellTransaction.execute({
       userId,
       cryptoSymbol,
-      quantity,
+      quantity: cryptoQuantity,
       unitPriceAtTransaction,
       transactionDate,
     })
 
-    return response.status(201).send()
+    return response.status(201).json({ 
+      message: 'Transaction created successfully',
+      transaction: {
+        id: transaction.id,
+        crypto_symbol: transaction.crypto_symbol,
+        crypto_name: transaction.crypto_name,
+        crypto_quantity: transaction.crypto_quantity.toString(),
+        usd_amount: transaction.usd_amount.toString(),
+        price_at_transaction: transaction.price_at_transaction.toString(),
+        transaction_type: transaction.transaction_type,
+        transaction_date: transaction.transaction_date,
+        created_at: transaction.created_at,
+        updated_at: transaction.updated_at,
+      }
+    })
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return response.status(404).json({ message: 'Crypto not found' })

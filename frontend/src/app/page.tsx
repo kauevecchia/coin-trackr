@@ -1,11 +1,11 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth-store";
+import { useAuth } from "@/hooks/useAuth";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 export default function HomePage() {
-  const { isAuthenticated, isLoading, checkSession } = useAuthStore();
+  const { isAuthenticated, isLoading, checkSession } = useAuth();
 
   useEffect(() => {
     if (!isLoading) {

@@ -42,13 +42,15 @@ export async function registerBuyTransaction(
       message: 'Transaction created successfully',
       transaction: {
         id: transaction.id,
-        cryptoSymbol: transaction.crypto_symbol,
-        cryptoName: transaction.crypto_name,
-        cryptoQuantity: transaction.crypto_quantity.toString(),
-        usdAmount: transaction.usd_amount.toString(),
-        priceAtTransaction: transaction.price_at_transaction.toString(),
-        transactionType: transaction.transaction_type,
-        transactionDate: transaction.transaction_date,
+        crypto_symbol: transaction.crypto_symbol,
+        crypto_name: transaction.crypto_name,
+        crypto_quantity: transaction.crypto_quantity.toString(),
+        usd_amount: transaction.usd_amount.toString(),
+        price_at_transaction: transaction.price_at_transaction.toString(),
+        transaction_type: transaction.transaction_type,
+        transaction_date: transaction.transaction_date,
+        created_at: transaction.created_at,
+        updated_at: transaction.updated_at,
       }
     })
   } catch (error) {
