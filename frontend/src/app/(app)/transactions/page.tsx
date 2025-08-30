@@ -6,12 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { CirclePlus, PlusCircle, Trash2 } from "lucide-react";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useCrypto } from "@/hooks/useCrypto";
 import { Transaction } from "@/services/transactions.service";
 import DeleteTransactionModal from "@/components/DeleteTransactionModal";
 import { toast } from "sonner";
+import Image from "next/image";
+import NewTransactionModal from "@/components/NewTransactionModal";
 
 export default function Transactions() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -25,6 +27,7 @@ export default function Transactions() {
   const { cryptos, isLoading: cryptoLoading } = useCrypto();
   const { formatCurrency, formatCrypto, formatPercentage } = useFormatters();
   
+  const [isOpen, setIsOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
 
@@ -112,6 +115,10 @@ export default function Transactions() {
 
   return (
     <div className="space-y-6">
+      <NewTransactionModal
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+      />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Transactions</h1>
@@ -119,10 +126,13 @@ export default function Transactions() {
             Your cryptocurrency buy and sell history
           </p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          New Transaction
-        </Button>
+        <Button
+            className="bg-gradient-to-r from-primary to-primary-glow text-muted dark:text-foreground hover:text-muted hover:scale-[1.03] transition-all cursor-pointer min-w-8 duration-200 ease-linear"
+            onClick={() => setIsOpen(true)}
+          >
+            <CirclePlus />
+            <span className="font-medium">New Transaction</span>
+          </Button>
       </div>
 
       {transactionsLoading || cryptoLoading ? (
@@ -174,15 +184,16 @@ export default function Transactions() {
                     return (
                       <TableRow 
                         key={transaction.id}
-                        className={transaction.transaction_type === 'SELL' ? 'bg-red-50 dark:bg-red-950/20' : ''}
+                        className={transaction.transaction_type === 'SELL' ? 'bg-red-200/60 hover:bg-red-200/70 dark:bg-red-950/30' : ''}
                       >
                         <TableCell>
                           {new Date(transaction.transaction_date).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
+                            <Image src={cryptos?.find(crypto => crypto.symbol === transaction.crypto_symbol)?.image_url || ''} alt={transaction.crypto_name} width={20} height={20} className="rounded-full" />
                             <span className="font-medium">{transaction.crypto_name}</span>
-                            <span className="text-sm text-muted-foreground">({transaction.crypto_symbol?.toUpperCase()})</span>
+                            <span className="text-sm text-muted-foreground">{transaction.crypto_symbol?.toUpperCase()}</span>
                           </div>
                         </TableCell>
                         <TableCell>
