@@ -152,7 +152,7 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
                         ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                         : selectedCrypto.unrealizedPnL < 0 
                         ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                        : 'bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400'
                     } ${getPnLColorClass(selectedCrypto.unrealizedPnLPercentage)}`}>{formatPercentage(selectedCrypto.unrealizedPnLPercentage)}</span>
             </div>
           </CardContent>
@@ -197,7 +197,7 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
                   return (
                     <TableRow 
                       key={transaction.id}
-                      className={transaction.transaction_type === 'SELL' ? 'bg-red-50 dark:bg-red-950/20' : ''}
+                      className={transaction.transaction_type === 'SELL' ? 'bg-red-200/60 hover:bg-red-200/70 dark:bg-red-950/30' : ''}
                     >
                       <TableCell>
                         {new Date(transaction.transaction_date).toLocaleDateString()}
@@ -206,7 +206,7 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           transaction.transaction_type === 'BUY'
                             ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                            : 'bg-red-200/80 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                         }`}>
                           {transaction.transaction_type}
                         </span>
@@ -222,7 +222,7 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
                       </TableCell>
                       <TableCell className="text-right font-mono font-medium">
                         {transaction.transaction_type === 'SELL' ? (
-                          <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                          <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-300/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400">
                             $0.00
                           </span>
                         ) : (
@@ -231,7 +231,7 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
                               ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                               : pnl < 0 
                               ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                              : 'bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400'
                           }`}>
                             {formatCurrency(pnl)}
                           </span>
@@ -239,7 +239,7 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
                       </TableCell>
                       <TableCell className="text-right font-mono font-medium">
                         {transaction.transaction_type === 'SELL' ? (
-                          <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                          <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-300/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400">
                             0.00%
                           </span>
                         ) : (
@@ -248,7 +248,7 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
                           ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                           : pnlPercentage < 0 
                           ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                          : 'bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400'
                             }`}>
                             {formatPercentage(pnlPercentage)}
                           </span>
