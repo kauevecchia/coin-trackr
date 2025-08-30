@@ -5,7 +5,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { CirclePlus, PlusCircle, Trash2 } from "lucide-react";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useCrypto } from "@/hooks/useCrypto";
@@ -14,6 +14,7 @@ import DeleteTransactionModal from "@/components/DeleteTransactionModal";
 import { toast } from "sonner";
 import Image from "next/image";
 import NewTransactionModal from "@/components/NewTransactionModal";
+import TransactionFilter from "@/components/TransactionFilter";
 
 export default function Transactions() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -30,6 +31,7 @@ export default function Transactions() {
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
+  const [selectedCryptos, setSelectedCryptos] = useState<string[]>([]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -59,6 +61,40 @@ export default function Transactions() {
     setIsDeleteModalOpen(false);
     setTransactionToDelete(null);
   };
+
+  // Get unique cryptos from transactions
+  const uniqueCryptos = useMemo(() => {
+    if (!transactions) return [];
+    
+    const cryptoMap = new Map();
+    transactions.forEach(transaction => {
+      if (!cryptoMap.has(transaction.crypto_symbol)) {
+        cryptoMap.set(transaction.crypto_symbol, {
+          symbol: transaction.crypto_symbol,
+          name: transaction.crypto_name,
+          count: 1
+        });
+      } else {
+        const existing = cryptoMap.get(transaction.crypto_symbol);
+        cryptoMap.set(transaction.crypto_symbol, {
+          ...existing,
+          count: existing.count + 1
+        });
+      }
+    });
+    
+    return Array.from(cryptoMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [transactions]);
+
+  // Filter transactions based on selected cryptos
+  const filteredTransactions = useMemo(() => {
+    if (!transactions) return [];
+    if (selectedCryptos.length === 0) return transactions;
+    
+    return transactions.filter(transaction => 
+      selectedCryptos.includes(transaction.crypto_symbol)
+    );
+  }, [transactions, selectedCryptos]);
 
   const calculateTransactionPnL = (transaction: Transaction) => {
     const transactionPrice = parseFloat(transaction.price_at_transaction);
@@ -135,6 +171,15 @@ export default function Transactions() {
           </Button>
       </div>
 
+      {/* Transaction Filter */}
+      {transactions.length > 0 && (
+        <TransactionFilter
+          uniqueCryptos={uniqueCryptos}
+          selectedCryptos={selectedCryptos}
+          onSelectedCryptosChange={setSelectedCryptos}
+        />
+      )}
+
       {transactionsLoading || cryptoLoading ? (
         <div className="flex items-center justify-center">
           <div className="text-center">
@@ -176,7 +221,7 @@ export default function Transactions() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactions
+                {filteredTransactions
                   .sort((a, b) => new Date(b.transaction_date).getTime() - new Date(a.transaction_date).getTime())
                   .map((transaction) => {
                     const { pnl, pnlPercentage, finalBalance } = calculateTransactionPnL(transaction);
@@ -216,7 +261,7 @@ export default function Transactions() {
                         </TableCell>
                         <TableCell className="text-right font-mono font-medium">
                           {transaction.transaction_type === 'SELL' ? (
-                            <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                            <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400">
                               $0.00
                             </span>
                           ) : (
@@ -225,7 +270,7 @@ export default function Transactions() {
                                 ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                                 : pnl < 0 
                                 ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                                : 'bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400'
                             }`}>
                               {formatCurrency(pnl)}
                             </span>
@@ -233,7 +278,7 @@ export default function Transactions() {
                         </TableCell>
                         <TableCell className="text-right font-mono font-medium">
                           {transaction.transaction_type === 'SELL' ? (
-                            <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                            <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400">
                               0.00%
                             </span>
                           ) : (
@@ -242,7 +287,7 @@ export default function Transactions() {
                             ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                             : pnlPercentage < 0 
                             ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                            : 'bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400'
                               }`}>
                               {formatPercentage(pnlPercentage)}
                             </span>
@@ -267,9 +312,9 @@ export default function Transactions() {
               </TableBody>
             </Table>
             
-            {transactions.length === 0 && (
+            {filteredTransactions.length === 0 && transactions.length > 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                No transactions found
+                No transactions found for the selected filters. Try adjusting your filter selection.
               </div>
             )}
           </CardContent>
