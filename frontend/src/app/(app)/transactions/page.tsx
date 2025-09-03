@@ -200,7 +200,12 @@ export default function Transactions() {
                   <span className="text-sm font-normal text-muted-foreground ml-2">
                     ({filteredTransactions.length} of {transactions.length} transactions)
                   </span>
-                )}
+                    )}
+                  {transactions.length > 0 && (
+                    <span className="text-sm font-normal text-muted-foreground ml-2">
+                      ({transactions.length} transactions)
+                    </span>
+                  )}
               </CardTitle>
             </CardHeader>
           <CardContent>
