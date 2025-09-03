@@ -5,7 +5,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { CirclePlus, PlusCircle, Trash2 } from "lucide-react";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useCrypto } from "@/hooks/useCrypto";
@@ -28,10 +28,11 @@ export default function Transactions() {
   const { cryptos, isLoading: cryptoLoading } = useCrypto();
   const { formatCurrency, formatCrypto, formatPercentage } = useFormatters();
   
-  const [isOpen, setIsOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedCryptos, setSelectedCryptos] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<('BUY' | 'SELL')[]>([]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -62,39 +63,27 @@ export default function Transactions() {
     setTransactionToDelete(null);
   };
 
-  // Get unique cryptos from transactions
-  const uniqueCryptos = useMemo(() => {
-    if (!transactions) return [];
-    
-    const cryptoMap = new Map();
-    transactions.forEach(transaction => {
-      if (!cryptoMap.has(transaction.crypto_symbol)) {
-        cryptoMap.set(transaction.crypto_symbol, {
-          symbol: transaction.crypto_symbol,
-          name: transaction.crypto_name,
-          count: 1
-        });
-      } else {
-        const existing = cryptoMap.get(transaction.crypto_symbol);
-        cryptoMap.set(transaction.crypto_symbol, {
-          ...existing,
-          count: existing.count + 1
-        });
-      }
-    });
-    
-    return Array.from(cryptoMap.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [transactions]);
+  // Calculate unique cryptos for filter
+  const uniqueCryptos = transactions?.reduce((acc, transaction) => {
+    const existing = acc.find(crypto => crypto.symbol === transaction.crypto_symbol);
+    if (existing) {
+      existing.count++;
+    } else {
+      acc.push({
+        symbol: transaction.crypto_symbol,
+        name: transaction.crypto_name,
+        count: 1
+      });
+    }
+    return acc;
+  }, [] as Array<{ symbol: string; name: string; count: number }>) || [];
 
-  // Filter transactions based on selected cryptos
-  const filteredTransactions = useMemo(() => {
-    if (!transactions) return [];
-    if (selectedCryptos.length === 0) return transactions;
-    
-    return transactions.filter(transaction => 
-      selectedCryptos.includes(transaction.crypto_symbol)
-    );
-  }, [transactions, selectedCryptos]);
+  // Filter transactions based on selected cryptos and types
+  const filteredTransactions = (transactions || []).filter(transaction => {
+    const cryptoMatch = selectedCryptos.length === 0 || selectedCryptos.includes(transaction.crypto_symbol);
+    const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(transaction.transaction_type as 'BUY' | 'SELL');
+    return cryptoMatch && typeMatch;
+  });
 
   const calculateTransactionPnL = (transaction: Transaction) => {
     const transactionPrice = parseFloat(transaction.price_at_transaction);
@@ -150,11 +139,14 @@ export default function Transactions() {
   }
 
   return (
+    
     <div className="space-y-6">
-      <NewTransactionModal
+      { isOpen && 
+       <NewTransactionModal
         isOpen={isOpen}
         onOpenChange={setIsOpen}
       />
+    }
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Transactions</h1>
@@ -164,21 +156,12 @@ export default function Transactions() {
         </div>
         <Button
             className="bg-gradient-to-r from-primary to-primary-glow text-muted dark:text-foreground hover:text-muted hover:scale-[1.03] transition-all cursor-pointer min-w-8 duration-200 ease-linear"
-            onClick={() => setIsOpen(true)}
+            onClick={() => {setIsOpen(true)}}
           >
             <CirclePlus />
             <span className="font-medium">New Transaction</span>
           </Button>
       </div>
-
-      {/* Transaction Filter */}
-      {transactions.length > 0 && (
-        <TransactionFilter
-          uniqueCryptos={uniqueCryptos}
-          selectedCryptos={selectedCryptos}
-          onSelectedCryptosChange={setSelectedCryptos}
-        />
-      )}
 
       {transactionsLoading || cryptoLoading ? (
         <div className="flex items-center justify-center">
@@ -200,10 +183,26 @@ export default function Transactions() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction History</CardTitle>
-          </CardHeader>
+        <>
+          <TransactionFilter
+            uniqueCryptos={uniqueCryptos}
+            selectedCryptos={selectedCryptos}
+            onSelectedCryptosChange={setSelectedCryptos}
+            selectedTypes={selectedTypes}
+            onSelectedTypesChange={setSelectedTypes}
+          />
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Transaction History
+                {selectedCryptos.length > 0 && (
+                  <span className="text-sm font-normal text-muted-foreground ml-2">
+                    ({filteredTransactions.length} of {transactions.length} transactions)
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
@@ -211,7 +210,7 @@ export default function Transactions() {
                   <TableHead>Date</TableHead>
                   <TableHead>Cryptocurrency</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Investment</TableHead>
+                  <TableHead className="text-right">Deposit/Withdrawal</TableHead>
                   <TableHead className="text-right">Price at Transaction</TableHead>
                   <TableHead className="text-right">Quantity</TableHead>
                   <TableHead className="text-right">P&L</TableHead>
@@ -229,14 +228,14 @@ export default function Transactions() {
                     return (
                       <TableRow 
                         key={transaction.id}
-                        className={transaction.transaction_type === 'SELL' ? 'bg-red-200/60 hover:bg-red-200/70 dark:bg-red-950/30' : ''}
+                        className={transaction.transaction_type === 'SELL' ? 'bg-red-50 dark:bg-red-950/20' : ''}
                       >
                         <TableCell>
                           {new Date(transaction.transaction_date).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <Image src={cryptos?.find(crypto => crypto.symbol === transaction.crypto_symbol)?.image_url || ''} alt={transaction.crypto_name} width={20} height={20} className="rounded-full" />
+                            <span><Image src={cryptos?.find(crypto => crypto.symbol === transaction.crypto_symbol)?.image_url || ''} alt={transaction.crypto_name} width={20} height={20} className="rounded-full" /></span>
                             <span className="font-medium">{transaction.crypto_name}</span>
                             <span className="text-sm text-muted-foreground">{transaction.crypto_symbol?.toUpperCase()}</span>
                           </div>
@@ -261,7 +260,7 @@ export default function Transactions() {
                         </TableCell>
                         <TableCell className="text-right font-mono font-medium">
                           {transaction.transaction_type === 'SELL' ? (
-                            <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400">
+                            <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
                               $0.00
                             </span>
                           ) : (
@@ -270,7 +269,7 @@ export default function Transactions() {
                                 ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                                 : pnl < 0 
                                 ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                                : 'bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
                             }`}>
                               {formatCurrency(pnl)}
                             </span>
@@ -278,7 +277,7 @@ export default function Transactions() {
                         </TableCell>
                         <TableCell className="text-right font-mono font-medium">
                           {transaction.transaction_type === 'SELL' ? (
-                            <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400">
+                            <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
                               0.00%
                             </span>
                           ) : (
@@ -287,7 +286,7 @@ export default function Transactions() {
                             ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                             : pnlPercentage < 0 
                             ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                            : 'bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
                               }`}>
                               {formatPercentage(pnlPercentage)}
                             </span>
@@ -314,11 +313,12 @@ export default function Transactions() {
             
             {filteredTransactions.length === 0 && transactions.length > 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                No transactions found for the selected filters. Try adjusting your filter selection.
+                No transactions found matching the current filter
               </div>
             )}
           </CardContent>
         </Card>
+        </>
       )}
 
       <DeleteTransactionModal
