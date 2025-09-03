@@ -5,6 +5,7 @@ import {
   TrendingUp,
   Wallet,
   BarChart3,
+  PieChart,
 } from 'lucide-react'
 
 import {
@@ -35,6 +36,11 @@ const data = {
       title: "Transactions",
       url: "/transactions",
       icon: TrendingUp,
+    },
+    {
+      title: "Analytics",
+      url: "/analytics",
+      icon: PieChart,
     },
   ],
 };

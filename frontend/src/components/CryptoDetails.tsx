@@ -178,7 +178,7 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead className="text-right">Investment</TableHead>
+                <TableHead className="text-right">Deposit/Withdrawal</TableHead>
                 <TableHead className="text-right">Price at Transaction</TableHead>
                 <TableHead className="text-right">Quantity</TableHead>
                 <TableHead className="text-right">P&L</TableHead>
