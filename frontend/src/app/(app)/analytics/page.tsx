@@ -11,6 +11,15 @@ import { PortfolioDistributionChart } from "@/lib/recharts/PortfolioDistribution
 import { PnLChart } from "@/lib/recharts/PnLChart";
 import { TradingSummary } from "@/components/analytics/TradingSummary";
 
+interface PortfolioItem {
+  symbol: string;
+  currentValue: number;
+  totalInvested: number;
+  unrealizedPnL: number;
+  unrealizedPnLPercentage: number;
+  image_url: string;
+}
+  
 const COLORS = [
   '#8b5cf6',
   '#06b6d4',
@@ -173,7 +182,7 @@ export default function Analytics() {
         totalPnL={totalPnL}
         totalPnLPercentage={totalPnLPercentage}
         cryptoCount={cryptoCount}
-        bestPerformer={bestPerformer}
+        bestPerformer={bestPerformer as PortfolioItem}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
