@@ -1,5 +1,4 @@
 import { User } from "@/generated/prisma"
-import { prisma } from "@/lib/prisma"
 import { UsersRepository } from "@/repositories/users-repository"
 
 interface UpdateUserNameUseCaseRequest {
@@ -24,5 +23,3 @@ export class UpdateUserNameUseCase {
     return { user }
   }
 }
-
-export default UpdateUserNameUseCase
