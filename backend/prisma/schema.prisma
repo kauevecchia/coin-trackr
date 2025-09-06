@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(uuid()) 
+  name          String        
+  email         String        @unique
+  password_hash String    
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+
+  transactions  Transaction[]
+
+  @@map("users")
+}
+
+model Transaction {
+  id                    String          @id @default(uuid())
+  user_id               String          
+  crypto_symbol         String          
+  crypto_name           String          
+  crypto_quantity       Decimal         @db.Decimal(24, 10) 
+  usd_amount            Decimal         @db.Decimal(24, 10)
+  price_at_transaction  Decimal         @db.Decimal(24, 10)
+  transaction_type      TransactionType 
+  transaction_date      DateTime        @default(now())
+  created_at            DateTime        @default(now())
+  updated_at            DateTime        @updatedAt
+
+  user                  User            @relation(fields: [user_id], references: [id])
+
+  @@index([user_id]) 
+  @@index([crypto_symbol]) 
+  @@map("transactions") 
+}
+
+enum TransactionType {
+  BUY
+  SELL
+}
+
+model CryptoCache {
+  id           String   @id @default(uuid())
+  name         String  
+  symbol       String   @unique 
+  image_url    String?
+  price        Decimal  @db.Decimal(24, 10)
+  last_updated DateTime @default(now())
+
+  @@map("crypto_cache")
+}
