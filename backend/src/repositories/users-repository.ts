@@ -6,4 +6,5 @@ export interface UsersRepository {
   create(data: Prisma.UserCreateInput): Promise<User>
   updateUserName(id: string, name: string): Promise<User | null>
   resetPassword(id: string, password: string, newPassword: string): Promise<User>
+  deleteAccount(userId: string): Promise<void>
 }

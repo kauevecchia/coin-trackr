@@ -67,6 +67,15 @@ export class InMemoryUsersRepository implements UsersRepository {
 
     return updatedUser
   }
+  async deleteAccount(userId: string) {
+    const user = this.items.find((user) => user.id === userId)
+
+    if (!user) {
+      throw new Error("User not found.")
+    }
+
+    this.items = this.items.filter((user) => user.id !== userId)
+  }
 }
 
 export default InMemoryUsersRepository
