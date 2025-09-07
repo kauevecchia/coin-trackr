@@ -1,14 +1,21 @@
 import { Request, Response } from 'express'
 import { z } from 'zod'
 import { makeDeleteAccountUseCase } from '@/use-cases/factories/make-delete-account-use-case'
+import { InvalidCredentialsError } from '@/use-cases/errors/invalid-credentials-error'
+
+const deleteAccountBodySchema = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+})
 
 export async function deleteAccount(request: Request, response: Response) {
   try {
+    const { password } = deleteAccountBodySchema.parse(request.body)
     const userId = request.user?.id
 
     const deleteAccountUseCase = makeDeleteAccountUseCase()
     await deleteAccountUseCase.execute({ 
       userId: userId!, 
+      password,
     })
 
     return response.status(200).json({
@@ -20,6 +27,10 @@ export async function deleteAccount(request: Request, response: Response) {
         message: 'Validation error', 
         errors: err.errors 
       })
+    }
+
+    if (err instanceof InvalidCredentialsError) {
+      return response.status(401).json({ message: 'Invalid password' })
     }
 
     if (err instanceof Error) {
