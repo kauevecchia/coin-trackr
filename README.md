@@ -13,12 +13,12 @@
     - Value in USD at the time of sale
     - Sale date (optional, default = current date)
 - [x] The user must be able to list their entire transaction history (purchases and sales).
-- [ ] The user must view a dashboard with:
+- [x] The user must view a dashboard with:
     - Current balance of each crypto
     - Total invested value
     - Current portfolio value
     - Current profit or loss per crypto and in total
-- [ ] The system must consult an external API to fetch the current cryptocurrency values.
+- [x] The system must consult an external API to fetch the current cryptocurrency values.
 
 ---
 
@@ -29,27 +29,27 @@
     - Quantity
     - Value per unit at the transaction date
     - Transaction type (buy or sell)
-- [ ] Profit/loss calculations are based on the difference between:
+- [x] Profit/loss calculations are based on the difference between:
     - The average purchase price of that crypto
     - The current crypto price (via external API)
 - [x] Each user has an individual portfolio. No data is shared between users.
 - [x] Transactions cannot be edited, only added or deleted (to maintain historical integrity).
-- [ ] If the current crypto price is not available (external API failure), the system must return the last consulted value (cache) or a user-friendly error message.
+- [x] If the current crypto price is not available (external API failure), the system must return the last consulted value (cache) or a user-friendly error message.
 
 ---
 
 ## Non-Functional Requirements (NFR)
 
-- [ ] The API must be developed using Node.js + Express.
-- [ ] The database used must be PostgreSQL.
-- [ ] Authentication must be based on JWT.
-- [ ] User passwords must be securely stored using hash (bcrypt).
-- [ ] API responses must follow the RESTful standard.
+- [x] The API must be developed using Node.js + Express.
+- [x] The database used must be PostgreSQL.
+- [x] Authentication must be based on JWT.
+- [x] User passwords must be securely stored using hash (bcrypt).
+- [x] API responses must follow the RESTful standard.
 - [ ] It must be possible to deploy the API on platforms like Render, Railway, Vercel, or similar.
-- [ ] The API must have global error handling.
+- [x] The API must have global error handling.
 - [ ] API documentation must be provided (e.g., Swagger or detailed README).
-- [ ] The application must have basic tests for critical rules (e.g., authentication and transactions).
-- [ ] The system must implement cryptocurrency price caching for a period (e.g., 1h) to optimize external API requests.
+- [x] The application must have basic tests for critical rules (e.g., authentication and transactions).
+- [x] The system must implement cryptocurrency price caching for a period (e.g., 1h) to optimize external API requests.
 
 ---
 
