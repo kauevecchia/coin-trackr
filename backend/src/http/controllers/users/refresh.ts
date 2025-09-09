@@ -6,6 +6,7 @@ import {
   TokenExpiredError,
 } from 'jsonwebtoken'
 import { env } from '../../../env'
+import { makeGetUserProfileUseCase } from '@/use-cases/factories/make-get-user-profile-use-case'
 
 export async function refresh(request: Request, response: Response) {
   const refreshToken = request.cookies.refreshToken
@@ -25,8 +26,12 @@ export async function refresh(request: Request, response: Response) {
 
     const userId = decodedToken.sub as string
 
+    // Get updated user data from database
+    const getUserProfileUseCase = makeGetUserProfileUseCase()
+    const { user } = await getUserProfileUseCase.execute({ userId })
+
     const newAccessToken = sign(
-      { sub: userId, email: decodedToken.email, name: decodedToken.name },
+      { sub: userId, email: user.email, name: user.name },
       env.JWT_SECRET,
       {
         expiresIn: "15m",
@@ -34,7 +39,7 @@ export async function refresh(request: Request, response: Response) {
     );
 
     const newRefreshToken = sign(
-      { sub: userId, email: decodedToken.email, name: decodedToken.name },
+      { sub: userId, email: user.email, name: user.name },
       env.JWT_SECRET,
       {
         expiresIn: "7d",
@@ -60,6 +65,7 @@ export async function refresh(request: Request, response: Response) {
       return response.status(401).json({ message: 'Refresh token invalid.' })
     }
 
+    console.error('Refresh token error:', err)
     return response
       .status(500)
       .json({ message: 'Internal server error to refresh token.' })
