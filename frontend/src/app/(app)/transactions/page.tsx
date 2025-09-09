@@ -176,10 +176,6 @@ export default function Transactions() {
             <p className="text-muted-foreground mb-4">
               No transactions found. Start by adding your first cryptocurrency transaction.
             </p>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add First Transaction
-            </Button>
           </CardContent>
         </Card>
       ) : (
