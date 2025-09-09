@@ -90,6 +90,13 @@ export const useAuth = () => {
     }
   }, []);
 
+  const updateUser = useCallback((updatedUser: Partial<User>) => {
+    setAuthState(prev => ({
+      ...prev,
+      user: prev.user ? { ...prev.user, ...updatedUser } : null,
+    }));
+  }, []);
+
   const checkSession = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -137,5 +144,6 @@ export const useAuth = () => {
     register,
     logout,
     checkSession,
+    updateUser,
   };
 }; 
