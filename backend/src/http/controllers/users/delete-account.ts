@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { z } from 'zod'
 import { makeDeleteAccountUseCase } from '@/use-cases/factories/make-delete-account-use-case'
 import { InvalidCredentialsError } from '@/use-cases/errors/invalid-credentials-error'
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
 
 const deleteAccountBodySchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
@@ -33,8 +34,8 @@ export async function deleteAccount(request: Request, response: Response) {
       return response.status(401).json({ message: 'Invalid password' })
     }
 
-    if (err instanceof Error) {
-      return response.status(404).json({ message: err.message })
+    if (err instanceof ResourceNotFoundError) {
+      return response.status(404).json({ message: 'User not found' })
     }
 
     return response.status(500).json({ message: 'Internal server error.' })
