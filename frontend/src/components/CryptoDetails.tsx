@@ -197,7 +197,10 @@ export const CryptoDetails = ({ cryptoSymbol, cryptoDetails }: CryptoDetailsProp
                   return (
                     <TableRow 
                       key={transaction.id}
-                      className={transaction.transaction_type === 'SELL' ? 'bg-red-50 dark:bg-red-950/20' : ''}
+                      className={transaction.transaction_type === 'SELL' 
+                        ? 'bg-red-100/70 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-950/60' 
+                        : 'hover:bg-muted/50'
+                      }
                     >
                       <TableCell>
                         {new Date(transaction.transaction_date).toLocaleDateString()}
