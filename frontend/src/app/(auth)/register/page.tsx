@@ -18,6 +18,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Bitcoin } from "lucide-react";
 
 export default function Register() {
   const router = useRouter();
@@ -52,16 +53,24 @@ export default function Register() {
   };
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader className="flex flex-col items-center justify-center">
+    <Card className="w-full max-w-lg p-8">
+      <CardHeader className="flex flex-col items-start justify-center text-left px-0">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo rounded-lg p-1.5">
+            <Bitcoin className="h-6 w-6 text-muted dark:text-foreground" />
+          </div>
+          <h1 className="text-2xl font-bold bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo text-transparent bg-clip-text">
+            CoinTrackr
+          </h1>
+        </div>
         <CardTitle className="text-2xl font-bold">
-          Welcome to Coin Trackr
+          Create an account
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
           Create an account to get started
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-6">
             <div className="grid gap-1">
@@ -135,7 +144,8 @@ export default function Register() {
           <div className="mt-6">
             <Button
               type="submit"
-              className="w-full cursor-pointer"
+              variant="glow"
+              className="w-full text-foreground cursor-pointer"
               disabled={isSubmitting || isLoading}
             >
               {isLoading ? "Creating account..." : "Register"}
