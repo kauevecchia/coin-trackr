@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { ChartCandlestick } from 'lucide-react'
+import { Bitcoin } from 'lucide-react'
 
 import { NavMain } from '@/components/NavMain'
 import { NavUser } from '@/components/NavUser'
@@ -34,12 +34,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary-glow">
-            <ChartCandlestick className="h-6 w-6 text-muted dark:text-foreground" />
+          <div className="bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo rounded-lg p-1.5">
+            <Bitcoin className="h-6 w-6 text-muted dark:text-foreground" />
           </div>
-          <span className="text-xl font-bold text-primary dark:text-primary-glow">
+          <h1 className="text-xl font-bold bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo text-transparent bg-clip-text">
             CoinTrackr
-          </span>
+          </h1>
         </div>
       </SidebarHeader>
       <Separator />
