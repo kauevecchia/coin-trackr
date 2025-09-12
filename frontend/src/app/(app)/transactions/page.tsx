@@ -229,7 +229,10 @@ export default function Transactions() {
                     return (
                       <TableRow 
                         key={transaction.id}
-                        className={transaction.transaction_type === 'SELL' ? 'bg-red-50 dark:bg-red-950/20' : ''}
+                        className={transaction.transaction_type === 'SELL' 
+                          ? 'bg-red-100/70 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-950/60' 
+                          : 'hover:bg-muted/50'
+                        }
                       >
                         <TableCell>
                           {new Date(transaction.transaction_date).toLocaleDateString()}
@@ -244,8 +247,8 @@ export default function Transactions() {
                         <TableCell>
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             transaction.transaction_type === 'BUY'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                              ? 'bg-green-200/60 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                              : 'bg-red-200/60 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                           }`}>
                             {transaction.transaction_type}
                           </span>
@@ -267,10 +270,10 @@ export default function Transactions() {
                           ) : (
                             <span className={`inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md ${
                               pnl > 0 
-                                ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                                ? 'bg-green-200/60 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
                                 : pnl < 0 
-                                ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                                ? 'bg-red-200/60 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                                : 'bg-gray-200/60 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
                             }`}>
                               {formatCurrency(pnl)}
                             </span>
