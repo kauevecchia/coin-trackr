@@ -10,8 +10,10 @@ import { PortfolioTable } from "@/components/PortfolioTable";
 import { CryptoDetails } from "@/components/CryptoDetails";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import { FadeInUp } from "@/components/PageTransition";
 
-export default function Portfolio() {
+const Portfolio = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     transactions, 
@@ -32,12 +34,28 @@ export default function Portfolio() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <motion.div 
+        className="flex items-center justify-center min-h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2">Loading portfolio...</p>
+          <motion.div 
+            className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.p 
+            className="mt-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            Loading portfolio...
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -89,47 +107,69 @@ export default function Portfolio() {
     return (
       <div className="space-y-6">
         <div className="flex flex-col items-start gap-4">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleBackToPortfolio}
-            className="flex items-center gap-2"
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Portfolio
-          </Button>
-          <div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleBackToPortfolio}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Portfolio
+            </Button>
+          </motion.div>
+          <FadeInUp delay={0.2}>
             <h1 className="text-3xl font-bold">
               {crypto ? `${crypto.name} Details` : `${selectedCrypto.toUpperCase()} Details`}
             </h1>
             <p className="text-muted-foreground">
               Detailed view of your {selectedCrypto.toUpperCase()} holdings
             </p>
-          </div>
+          </FadeInUp>
         </div>
 
-        <CryptoDetails 
-          cryptoSymbol={selectedCrypto}
-          cryptoDetails={cryptos || []}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <CryptoDetails 
+            cryptoSymbol={selectedCrypto}
+            cryptoDetails={cryptos || []}
+          />
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div>
+      <FadeInUp>
         <h1 className="text-3xl font-bold">Portfolio</h1>
         <p className="text-muted-foreground">
           Your cryptocurrency investments
         </p>
-      </div>
+      </FadeInUp>
 
-      <PortfolioTable 
-        portfolio={portfolio} 
-        isLoading={isLoading}
-        onCryptoClick={handleCryptoClick}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <PortfolioTable 
+          portfolio={portfolio} 
+          isLoading={isLoading}
+          onCryptoClick={handleCryptoClick}
+        />
+      </motion.div>
     </div>
   );
 }
+
+export default Portfolio;
