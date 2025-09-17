@@ -2,36 +2,95 @@
 
 import { ReactNode, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { Bitcoin } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, checkSession } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
+  // check session on mount
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
   }, [isAuthenticated, isLoading, router]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // re-check session on every route change (without loading state)
+  useEffect(() => {
+    if (isAuthenticated) {
+      checkSession(true).catch(() => {
+      });
+    }
+  }, [pathname, isAuthenticated, checkSession]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  return (
+    <AnimatePresence>
+      {isLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center"
+        >
+          <motion.div 
+            className="text-center"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div 
+              className="bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo rounded-lg p-3 mb-3 mx-auto w-fit shadow-lg"
+              animate={{ 
+                rotate: [0, 360],
+                scale: [1, 1.05, 1]
+              }}
+              transition={{ 
+                rotate: { duration: 1.5, repeat: Infinity, ease: "linear" },
+                scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+              }}
+            >
+              <Bitcoin className="h-7 w-7 text-white" />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <h3 className="text-base font-semibold bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo text-transparent bg-clip-text mb-1">
+                CoinTrackr
+              </h3>
+              <p className="text-xs text-muted-foreground">Loading application...</p>
+            </motion.div>
 
-  return <>{children}</>;
+            {/* Progress bar */}
+            <motion.div 
+              className="w-24 h-0.5 bg-muted rounded-full overflow-hidden mt-3 mx-auto"
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: 0.15, duration: 0.3 }}
+            >
+              <motion.div
+                className="h-full bg-gradient-to-r from-gradient-sky to-gradient-indigo rounded-full"
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 1, ease: "easeInOut", repeat: Infinity }}
+              />
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      )}
+      
+      {!isLoading && isAuthenticated && children}
+    </AnimatePresence>
+  );
 }; 
