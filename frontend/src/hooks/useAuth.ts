@@ -97,8 +97,10 @@ export const useAuth = () => {
     }));
   }, []);
 
-  const checkSession = useCallback(async () => {
-    setLoading(true);
+  const checkSession = useCallback(async (skipLoading = false) => {
+    if (!skipLoading) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -112,22 +114,33 @@ export const useAuth = () => {
       if (!authService.isTokenValid(storedToken)) {
         authService.clearStoredToken();
         setUnauthenticated();
-        return;
+        throw new Error("Token expired");
       }
 
       const user = authService.getUserFromToken(storedToken);
-      setAuthenticated(user);
+      
+      // if token is close to expiring (less than 5 minutes), try to refresh
+      const decoded = authService.getUserFromToken(storedToken);
+      const tokenExp = JSON.parse(atob(storedToken.split('.')[1])).exp;
+      const currentTime = Date.now() / 1000;
+      const timeUntilExpiry = tokenExp - currentTime;
 
-      try {
-        const { user: refreshedUser } = await authService.refreshToken();
-        setAuthenticated(refreshedUser);
-      } catch (refreshError) {
-        console.warn("Token refresh failed, but user remains authenticated:", refreshError);
-        setLoading(false);
+      if (timeUntilExpiry < 300) { // less than 5 minutes
+        try {
+          const { user: refreshedUser } = await authService.refreshToken();
+          setAuthenticated(refreshedUser);
+        } catch (refreshError) {
+          // if refresh fails, the token is probably invalid
+          authService.clearStoredToken();
+          setUnauthenticated();
+          throw new Error("Session expired");
+        }
+      } else {
+        setAuthenticated(user);
       }
     } catch (error: any) {
       authService.clearStoredToken();
-      const errorMessage = error.response?.data?.message || "Session expired. Please log in again.";
+      const errorMessage = error.message || "Session expired. Please log in again.";
       setError(errorMessage);
       setUnauthenticated();
       throw error;

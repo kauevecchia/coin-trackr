@@ -1,34 +1,14 @@
 'use client'
 
-import { ReactNode, useEffect } from "react";
-import { useAuth } from "../../hooks/useAuth";
-import { useRouter, usePathname } from "next/navigation";
-import { Bitcoin } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useLoading } from '@/contexts/LoadingContext'
+import { useLoadingStop } from '@/hooks/useLoadingStop'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Bitcoin } from 'lucide-react'
 
-interface ProtectedRouteProps {
-  children: ReactNode;
-}
-
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading, checkSession } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  // check session on mount
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, isLoading, router]);
-
-  // re-check session on every route change (without loading state)
-  useEffect(() => {
-    if (isAuthenticated) {
-      checkSession(true).catch(() => {
-      });
-    }
-  }, [pathname, isAuthenticated, checkSession]);
+export function ContentLoadingOverlay() {
+  const { isLoading } = useLoading()
+  
+  useLoadingStop()
 
   return (
     <AnimatePresence>
@@ -38,7 +18,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center"
+          className="absolute inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center rounded-lg"
         >
           <motion.div 
             className="text-center"
@@ -69,7 +49,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
               <h3 className="text-base font-semibold bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo text-transparent bg-clip-text mb-1">
                 CoinTrackr
               </h3>
-              <p className="text-xs text-muted-foreground">Loading application...</p>
+              <p className="text-xs text-muted-foreground">Loading page...</p>
             </motion.div>
 
             {/* Progress bar */}
@@ -89,8 +69,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           </motion.div>
         </motion.div>
       )}
-      
-      {!isLoading && isAuthenticated && children}
     </AnimatePresence>
-  );
-}; 
+  )
+}

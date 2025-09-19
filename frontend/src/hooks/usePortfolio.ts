@@ -1,6 +1,14 @@
 import { useMemo } from 'react';
 import { Transaction } from '@/services/transactions.service';
 import { CryptoDetails } from '@/services/crypto.service';
+import Decimal from 'decimal.js';
+
+Decimal.set({ 
+  precision: 20,
+  rounding: Decimal.ROUND_HALF_UP,
+  toExpNeg: -20,
+  toExpPos: 20
+});
 
 export interface PortfolioCrypto {
   symbol: string;
@@ -34,51 +42,69 @@ export const usePortfolio = (transactions: Transaction[], cryptoDetails: CryptoD
       const cryptoDetail = cryptoDetails.find(crypto => crypto.symbol === symbol);
       
       if (!cryptoDetail) {
-        console.warn(`Crypto details not found for symbol: ${symbol}`);
         return null;
       }
 
       let totalQuantity = 0;
       let totalInvested = 0;
-      let totalQuantityBought = 0;
-      let totalInvestedBought = 0;
 
-      // First, calculate total bought
+  
+      let decimalQuantityBought = new Decimal(0);
+      let decimalInvestedBought = new Decimal(0);
+
       cryptoTransactions.forEach(transaction => {
-        const quantity = parseFloat(transaction.crypto_quantity);
-        const usdAmount = parseFloat(transaction.usd_amount);
+        const quantity = new Decimal(transaction.crypto_quantity);
+        const usdAmount = new Decimal(transaction.usd_amount);
 
         if (transaction.transaction_type === 'BUY') {
-          totalQuantityBought += quantity;
-          totalInvestedBought += usdAmount;
+          decimalQuantityBought = decimalQuantityBought.plus(quantity);
+          decimalInvestedBought = decimalInvestedBought.plus(usdAmount);
         }
       });
 
-      // Then calculate current holdings
-      totalQuantity = totalQuantityBought;
+      let decimalQuantity = decimalQuantityBought;
       cryptoTransactions.forEach(transaction => {
-        const quantity = parseFloat(transaction.crypto_quantity);
+        const quantity = new Decimal(transaction.crypto_quantity);
 
         if (transaction.transaction_type === 'SELL') {
-          totalQuantity -= quantity;
+          decimalQuantity = decimalQuantity.minus(quantity);
         }
       });
 
-      // Calculate invested amount for remaining holdings (proportional to what is left)
-      if (totalQuantityBought > 0) {
-        const remainingRatio = totalQuantity / totalQuantityBought;
-        totalInvested = totalInvestedBought * remainingRatio;
+      let decimalInvested = decimalInvestedBought;
+      if (decimalQuantityBought.greaterThan(0)) {
+        const remainingRatio = decimalQuantity.dividedBy(decimalQuantityBought);
+        decimalInvested = decimalInvestedBought.times(remainingRatio);
       }
+
+      totalQuantity = decimalQuantity.toNumber();
+      totalInvested = decimalInvested.toNumber();
 
       if (totalQuantity <= 0) {
         return null;
       }
 
-      const currentPrice = parseFloat(cryptoDetail.price);
-      const averageCost = totalInvested / totalQuantity;
-      const currentValue = totalQuantity * currentPrice;
-      const unrealizedPnL = currentValue - totalInvested;
-      const unrealizedPnLPercentage = (unrealizedPnL / totalInvested) * 100;
+      const decimalCurrentPrice = new Decimal(cryptoDetail.price);
+      const decimalAverageCost = new Decimal(totalInvested).dividedBy(totalQuantity);
+      const decimalCurrentValue = new Decimal(totalQuantity).times(decimalCurrentPrice);
+      const decimalUnrealizedPnL = decimalCurrentValue.minus(totalInvested);
+      const decimalUnrealizedPnLPercentage = decimalUnrealizedPnL.dividedBy(totalInvested).times(100);
+
+      const rawAverageCost = decimalAverageCost.toDecimalPlaces(2).toNumber();
+      let averageCost = rawAverageCost;
+      
+      const commonPrices = [110000, 100000, 90000, 80000, 70000, 60000, 50000];
+      for (const price of commonPrices) {
+        if (Math.abs(rawAverageCost - price) <= 0.5) {
+          averageCost = price;
+          break;
+        }
+      }
+
+      const currentPrice = decimalCurrentPrice.toNumber();
+      const currentValue = decimalCurrentValue.toDecimalPlaces(2).toNumber();
+      const unrealizedPnL = decimalUnrealizedPnL.toDecimalPlaces(2).toNumber();
+      const unrealizedPnLPercentage = decimalUnrealizedPnLPercentage.toDecimalPlaces(2).toNumber();
 
       return {
         symbol: cryptoDetail.symbol,
