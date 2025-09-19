@@ -102,19 +102,19 @@ export default function TransactionFilter({
   const hasFilters = selectedCryptos.length > 0 || selectedTypes.length > 0;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
       {/* Cryptocurrency Filter */}
       <DropdownMenu open={isCryptoOpen} onOpenChange={setIsCryptoOpen}>
         <DropdownMenuTrigger asChild>
           <Button 
             variant="outline" 
-            className="min-w-[200px] justify-between"
+            className="w-full sm:min-w-[200px] sm:max-w-[250px] justify-between"
           >
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <span>{getCryptoFilterText()}</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <Filter className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">{getCryptoFilterText()}</span>
             </div>
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown className="h-4 w-4 flex-shrink-0" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[300px]" align="start">
@@ -173,13 +173,13 @@ export default function TransactionFilter({
         <DropdownMenuTrigger asChild>
           <Button 
             variant="outline" 
-            className="min-w-[180px] justify-between"
+            className="w-full sm:min-w-[180px] sm:max-w-[220px] justify-between"
           >
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <span>{getTypeFilterText()}</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <Filter className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">{getTypeFilterText()}</span>
             </div>
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown className="h-4 w-4 flex-shrink-0" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[250px]" align="start">
@@ -253,10 +253,11 @@ export default function TransactionFilter({
           variant="ghost"
           size="sm"
           onClick={handleClearFilters}
-          className="h-10 px-3"
+          className="h-10 px-3 w-full sm:w-auto flex-shrink-0"
         >
           <X className="h-4 w-4 mr-1" />
-          Clear filters
+          <span className="hidden sm:inline">Clear filters</span>
+          <span className="sm:hidden">Clear</span>
         </Button>
       )}
     </div>
