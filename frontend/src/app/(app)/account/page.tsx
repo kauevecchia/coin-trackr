@@ -45,8 +45,8 @@ const Account = () => {
 
   const handleLogout = () => {
     logout()
-    toast.success('See you next time!')
     router.push('/login')
+    toast.success('See you next time!')
   }
 
   return (

@@ -45,9 +45,9 @@ export default function Register() {
     try {
       await register(data.name, data.email, data.password);
 
-      toast.success("Account created successfully! Welcome to Coin Trackr.");
       reset();
       router.push("/dashboard");
+      toast.success("Account created successfully! Welcome to Coin Trackr.");
     } catch (err) {
       console.error("Registration failed:", err);
     }

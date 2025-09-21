@@ -47,9 +47,9 @@ export const DeleteAccountModal = () => {
       await accountService.deleteAccount({
         password: data.password,
       })
-      toast.success('Account deleted successfully!')
       logout()
       router.push('/login')
+      toast.success('Account deleted successfully!')
       setOpen(false)
       reset()
     } catch (error) {

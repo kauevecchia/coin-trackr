@@ -42,11 +42,8 @@ export default function Login() {
     const onSubmit = async (data: LoginFormInputs) => {
       try {
         await login(data.email, data.password)
-        
-        toast.success("Welcome back to Coin Trackr.")
-        
         router.push("/dashboard")
-
+        toast.success("Welcome back to Coin Trackr.")
         reset()
       } catch (err) {
         console.error("Login failed:", err);
