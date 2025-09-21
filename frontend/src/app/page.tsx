@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import Image from 'next/image'
+import Header from '@/components/Header'
 
 export default function LandingPage() {
   const { scrollYProgress } = useScroll()
@@ -59,44 +60,7 @@ export default function LandingPage() {
 
     return (
     <div className="min-h-screen bg-background">
-      <motion.header 
-        className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/40"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <motion.div 
-            className="flex items-center gap-2 sm:gap-3"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            <motion.div 
-              className="bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo rounded-lg p-1.5 sm:p-2"
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Bitcoin className="h-5 w-5 sm:h-8 sm:w-8 text-white" />
-            </motion.div>
-            <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-br from-gradient-amber via-gradient-sky to-gradient-indigo text-transparent bg-clip-text">
-              CoinTrackr
-            </h1>
-          </motion.div>
-          
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/login">
-              <Button variant="ghost" className="hover:bg-accent text-sm sm:text-base px-3 sm:px-4">
-                Login
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button className="bg-gradient-to-r from-gradient-sky to-gradient-indigo hover:from-gradient-sky/90 hover:to-gradient-indigo/90 text-white text-sm sm:text-base px-3 sm:px-4">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </motion.header>
+      <Header showAuthButtons={true} />
 
       <section className="relative pt-32 pb-20 overflow-hidden">
         <motion.div 
