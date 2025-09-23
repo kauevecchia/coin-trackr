@@ -20,7 +20,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(userRoutes)
 app.use('/cryptos', cryptoRoutes)
-app.use('/', transactionsRoutes)
+app.use('/transactions', transactionsRoutes)
 
 app.use(errorHandler)
 
