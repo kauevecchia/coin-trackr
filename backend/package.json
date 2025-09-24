@@ -20,8 +20,10 @@
   "devDependencies": {
     "@rocketseat/eslint-config": "2.2.2",
     "@types/node": "22.15.21",
+    "@types/node-cron": "3.0.11",
     "@types/supertest": "6.0.3",
     "eslint": "8.57.1",
+    "node-cron": "4.2.1",
     "prisma": "6.8.2",
     "supertest": "7.1.1",
     "tsup": "8.5.0",
