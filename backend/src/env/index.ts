@@ -7,6 +7,10 @@ const envSchema = z.object({
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string(),
   COINGECKO_API_KEY: z.string(),
+  ADMIN_API_KEY: z.string(),
+  CRON_ENABLED: z.string().default('true'),
+  CRON_SCHEDULE: z.string().default('*/5 * * * *'),
+  CRON_TIMEZONE: z.string().default('America/Sao_Paulo'),
 })
 
 const _env = envSchema.safeParse(process.env)

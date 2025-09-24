@@ -4,11 +4,10 @@ import jwt from 'jsonwebtoken'
 import { app } from './app'
 import { env } from './env'
 import { WebSocketService } from './services/websocket.service'
+import { PriceUpdaterCron } from './cron/price-updater'
 
-// Criar servidor HTTP
 const server = createServer(app)
 
-// Configurar Socket.IO
 const io = new Server(server, {
   cors: {
     origin: [
@@ -23,14 +22,12 @@ const io = new Server(server, {
   allowEIO3: true,
 })
 
-// Estender interface do Socket para incluir userId
 declare module 'socket.io' {
   interface Socket {
     userId?: string;
   }
 }
 
-// Middleware de autenticação para WebSocket
 io.use((socket, next) => {
   try {
     const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace('Bearer ', '')
@@ -40,9 +37,8 @@ io.use((socket, next) => {
       return next(new Error('Authentication error: No token provided'))
     }
 
-    // Verificar o token JWT
     const decoded = jwt.verify(token, env.JWT_SECRET) as any
-    socket.userId = decoded.sub || decoded.id // Adicionar ID do usuário ao socket
+    socket.userId = decoded.sub || decoded.id
     
     console.log(`✅ WebSocket authenticated for user: ${socket.userId}`)
     next()
@@ -52,10 +48,8 @@ io.use((socket, next) => {
   }
 })
 
-// Inicializar serviço WebSocket
 WebSocketService.initialize(io)
 
-// Gerenciar conexões WebSocket
 io.on('connection', (socket) => {
   console.log(`🟢 Client connected: ${socket.id} (User: ${socket.userId})`)
   
@@ -65,11 +59,23 @@ io.on('connection', (socket) => {
   })
 })
 
-// Iniciar servidor
 server.listen(env.PORT, () => {
   console.log(`🚀 HTTP Server Running on port ${env.PORT}!`)
   console.log(`⚡ WebSocket Server Ready!`)
+  
+  PriceUpdaterCron.start()
 })
 
-// Exportar io para usar em outros arquivos
+process.on('SIGTERM', () => {
+  console.log('🛑 Shutting down gracefully...')
+  PriceUpdaterCron.stop()
+  server.close()
+})
+
+process.on('SIGINT', () => {
+  console.log('🛑 Shutting down gracefully...')
+  PriceUpdaterCron.stop()
+  server.close()
+})
+
 export { io }
