@@ -11,12 +11,12 @@ interface ConnectionStatusProps {
   className?: string;
 }
 
-export default function ConnectionStatus({
+const ConnectionStatus = ({
   isConnected,
   connectionError,
   lastUpdateTime,
   className,
-}: ConnectionStatusProps) {
+}: ConnectionStatusProps) => {
   const [timeAgo, setTimeAgo] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,4 +77,6 @@ export default function ConnectionStatus({
       )}
     </motion.div>
   );
-}
+};
+
+export default ConnectionStatus;

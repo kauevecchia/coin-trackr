@@ -17,7 +17,7 @@ interface TransactionCardProps {
   onDelete: (transactionId: string) => void;
 }
 
-export default function TransactionCard({
+const TransactionCard = ({
   transaction,
   index,
   pnl,
@@ -25,7 +25,7 @@ export default function TransactionCard({
   finalBalance,
   cryptoImageUrl,
   onDelete,
-}: TransactionCardProps) {
+}: TransactionCardProps) => {
   const { formatCurrency, formatCrypto, formatPercentage } = useFormatters();
 
   return (
@@ -130,4 +130,6 @@ export default function TransactionCard({
       )}
     </motion.div>
   );
-}
+};
+
+export default TransactionCard;

@@ -28,13 +28,13 @@ interface TransactionFilterProps {
   onSelectedTypesChange: (selected: TransactionType[]) => void;
 }
 
-export default function TransactionFilter({
+const TransactionFilter = ({
   uniqueCryptos,
   selectedCryptos,
   onSelectedCryptosChange,
   selectedTypes,
   onSelectedTypesChange,
-}: TransactionFilterProps) {
+}: TransactionFilterProps) => {
   const [isCryptoOpen, setIsCryptoOpen] = useState(false);
   const [isTypeOpen, setIsTypeOpen] = useState(false);
 
@@ -262,4 +262,6 @@ export default function TransactionFilter({
       )}
     </div>
   );
-}
+};
+
+export default TransactionFilter;

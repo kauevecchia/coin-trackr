@@ -53,7 +53,7 @@ const COLORS = [
   '#fef3c7',
 ];
 
-export default function Analytics() {
+const Analytics = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     transactions, 
@@ -279,4 +279,6 @@ export default function Analytics() {
 
     </div>
   );
-}
+};
+
+export default Analytics;

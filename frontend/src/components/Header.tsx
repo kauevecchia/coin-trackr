@@ -9,7 +9,7 @@ interface HeaderProps {
   showAuthButtons?: boolean;
 }
 
-export default function Header({ showAuthButtons = true }: HeaderProps) {
+const Header = ({ showAuthButtons = true }: HeaderProps) => {
   return (
     <motion.header 
       className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/40"
@@ -54,4 +54,6 @@ export default function Header({ showAuthButtons = true }: HeaderProps) {
       </div>
     </motion.header>
   );
-}
+};
+
+export default Header;

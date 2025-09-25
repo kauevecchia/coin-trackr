@@ -7,7 +7,7 @@ import { PageTransition } from '@/components/PageTransition'
 import { LoadingProvider } from '@/contexts/LoadingContext'
 import { ContentLoadingOverlay } from '@/components/ContentLoadingOverlay'
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <ProtectedRoute>
       <TransactionsProvider>
@@ -35,4 +35,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </TransactionsProvider>
     </ProtectedRoute>
   )
-}
+};
+
+export default AppLayout;

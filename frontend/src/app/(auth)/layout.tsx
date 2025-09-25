@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen bg-background">
       <Header showAuthButtons={false} />
@@ -9,4 +9,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
     </div>
   );
-}
+};
+
+export default AuthLayout;

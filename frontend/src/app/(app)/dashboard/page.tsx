@@ -16,7 +16,7 @@ import { useFormatters } from "@/hooks/useFormatters";
 import { motion } from "framer-motion";
 import { StaggerContainer, FadeInUp, ScaleIn } from "@/components/PageTransition";
 
-export default function Dashboard() {
+const Dashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { transactions, isLoading: transactionsLoading, fetchTransactions } = useTransactionsContext();
   const { cryptos: cryptoDetails, isLoading: cryptoLoading, refetch: refetchCryptos } = useCrypto();
@@ -267,4 +267,6 @@ export default function Dashboard() {
       )}
     </div>
   );
-}
+};
+
+export default Dashboard;

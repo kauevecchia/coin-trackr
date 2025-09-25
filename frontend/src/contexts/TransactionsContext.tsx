@@ -11,8 +11,8 @@ interface TransactionsState {
 
 interface TransactionsContextType extends TransactionsState {
   fetchTransactions: () => Promise<void>;
-  createBuyTransaction: (data: CreateTransactionRequest) => Promise<any>;
-  createSellTransaction: (data: CreateTransactionRequest) => Promise<any>;
+  createBuyTransaction: (data: CreateTransactionRequest) => Promise<void>;
+  createSellTransaction: (data: CreateTransactionRequest) => Promise<void>;
   deleteTransaction: (transactionId: string) => Promise<void>;
   refreshTransactions: () => Promise<void>;
 }
@@ -59,8 +59,8 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
     try {
       const transactions = await transactionsService.getUserTransactions();
       setTransactions(transactions);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to fetch transactions.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to fetch transactions.";
       setError(errorMessage);
       setLoading(false);
       throw error;
@@ -75,9 +75,8 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
       const response = await transactionsService.createBuyTransaction(data);
       addTransaction(response.transaction);
       setLoading(false);
-      return response;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to create buy transaction.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to create buy transaction.";
       setError(errorMessage);
       setLoading(false);
       throw error;
@@ -92,9 +91,8 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
       const response = await transactionsService.createSellTransaction(data);
       addTransaction(response.transaction);
       setLoading(false);
-      return response;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to create sell transaction.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to create sell transaction.";
       setError(errorMessage);
       setLoading(false);
       throw error;
@@ -109,8 +107,8 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
       await transactionsService.deleteTransaction(transactionId);
       removeTransaction(transactionId);
       setLoading(false);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to delete transaction.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to delete transaction.";
       setError(errorMessage);
       setLoading(false);
       throw error;

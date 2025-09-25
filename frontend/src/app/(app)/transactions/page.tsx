@@ -19,7 +19,7 @@ import TransactionCard from "@/components/TransactionCard";
 import { motion } from "framer-motion";
 import { FadeInUp } from "@/components/PageTransition";
 
-export const Transactions = () => {
+const Transactions = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     transactions, 
@@ -458,6 +458,6 @@ export const Transactions = () => {
       />
     </div>
   );
-}
+};
 
 export default Transactions;

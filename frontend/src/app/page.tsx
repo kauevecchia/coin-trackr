@@ -9,7 +9,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
 
-export default function LandingPage() {
+const LandingPage = () => {
   const { scrollYProgress } = useScroll()
   const y = useTransform(scrollYProgress, [0, 1], ['0%', '50%'])
   const [cryptoImages, setCryptoImages] = useState<Array<{ symbol: string; image_url: string | null }>>([])
@@ -406,4 +406,6 @@ export default function LandingPage() {
       </footer>
     </div>
   )
-}
+};
+
+export default LandingPage;
