@@ -55,8 +55,8 @@ export const useCrypto = () => {
     try {
       const cryptos = await cryptoService.getAllFixedCryptoDetails();
       setCryptos(cryptos);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to fetch cryptos.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to fetch cryptos.";
       setError(errorMessage);
       setLoading(false);
       throw error;

@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { Bitcoin } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function Login() {
+const Login = () => {
     const router = useRouter()
     const { login, isLoading } = useAuth();
 
@@ -217,4 +217,6 @@ export default function Login() {
       </Card>
     </motion.div>
   );
-}
+};
+
+export default Login;

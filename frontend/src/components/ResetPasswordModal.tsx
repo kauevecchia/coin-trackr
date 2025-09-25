@@ -49,12 +49,13 @@ const ResetPasswordModal = () => {
       toast.success('Password updated successfully!')
       setOpen(false)
       reset()
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Update password error:', error)
-      if (error.response?.status === 401) {
+      const errorObj = error as { response?: { status?: number; data?: { message?: string } } }
+      if (errorObj.response?.status === 401) {
         toast.error('Current password is incorrect. Please try again.')
-      } else if (error.response?.status === 400) {
-        toast.error(error.response?.data?.message || 'Invalid password format.')
+      } else if (errorObj.response?.status === 400) {
+        toast.error(errorObj.response?.data?.message || 'Invalid password format.')
       } else {
         toast.error('Error updating password. Please try again.')
       }

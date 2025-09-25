@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CryptoPortfolioCard } from "@/components/CryptoPortfolioCard";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { useTransactionsContext } from "@/contexts/TransactionsContext";
-import { useCrypto } from "@/hooks/useCrypto";
+import { useCrypto } from "@/hooks/useCrypto";  
+import { usePriceUpdates } from "@/hooks/usePriceUpdates";
+import ConnectionStatus from "@/components/ConnectionStatus";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, DollarSign, Banknote, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -14,12 +16,13 @@ import { useFormatters } from "@/hooks/useFormatters";
 import { motion } from "framer-motion";
 import { StaggerContainer, FadeInUp, ScaleIn } from "@/components/PageTransition";
 
-export default function Dashboard() {
+const Dashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { transactions, isLoading: transactionsLoading, fetchTransactions } = useTransactionsContext();
-  const { cryptos: cryptoDetails, isLoading: cryptoLoading } = useCrypto();
+  const { cryptos: cryptoDetails, isLoading: cryptoLoading, refetch: refetchCryptos } = useCrypto();
   const { formatCurrency, formatPercentage, getPnLColorClass } = useFormatters();
   const [isOpen, setIsOpen] = useState(false);
+  const { isConnected, connectionError, lastUpdateTime } = usePriceUpdates(refetchCryptos);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -76,10 +79,20 @@ export default function Dashboard() {
         onOpenChange={setIsOpen}
       />
       <FadeInUp>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back, {user.name}!
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h1 className="text-3xl font-bold">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Welcome back, {user.name}!
+            </p>
+          </div>
+          <ConnectionStatus
+            isConnected={isConnected}
+            connectionError={connectionError}
+            lastUpdateTime={lastUpdateTime}
+            className="self-start sm:self-center"
+          />
+        </div>
       </FadeInUp>
 
       <StaggerContainer className="flex flex-col md:flex-row flex-grow gap-4">
@@ -254,4 +267,6 @@ export default function Dashboard() {
       )}
     </div>
   );
-}
+};
+
+export default Dashboard;

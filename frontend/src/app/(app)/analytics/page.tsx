@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useEffect } from "react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { useCrypto } from "@/hooks/useCrypto";
+import { usePriceUpdates } from "@/hooks/usePriceUpdates";
+import ConnectionStatus from "@/components/ConnectionStatus";
 import { AnalyticsCards } from "@/components/analytics/AnalyticsCards";
 import { PortfolioDistributionChart } from "@/lib/recharts/PortfolioDistributionChart";
 import { PnLChart } from "@/lib/recharts/PnLChart";
@@ -51,7 +53,7 @@ const COLORS = [
   '#fef3c7',
 ];
 
-export default function Analytics() {
+const Analytics = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     transactions, 
@@ -59,7 +61,8 @@ export default function Analytics() {
     error, 
     fetchTransactions 
   } = useTransactionsContext();
-  const { cryptos: cryptoDetails, isLoading: cryptoLoading } = useCrypto();
+  const { cryptos: cryptoDetails, isLoading: cryptoLoading, refetch: refetchCryptos } = useCrypto();
+  const { isConnected, connectionError, lastUpdateTime } = usePriceUpdates(refetchCryptos);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -180,10 +183,20 @@ export default function Analytics() {
     return (
       <div className="space-y-6">
         <FadeInUp>
-          <h1 className="text-3xl font-bold">Analytics</h1>
-          <p className="text-muted-foreground">
-            Portfolio insights and performance metrics
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+              <h1 className="text-3xl font-bold">Analytics</h1>
+              <p className="text-muted-foreground">
+                Portfolio insights and performance metrics
+              </p>
+            </div>
+            <ConnectionStatus
+              isConnected={isConnected}
+              connectionError={connectionError}
+              lastUpdateTime={lastUpdateTime}
+              className="self-start sm:self-center"
+            />
+          </div>
         </FadeInUp>
         
         <motion.div
@@ -211,10 +224,20 @@ export default function Analytics() {
   return (
     <div className="space-y-6">
       <FadeInUp>
-        <h1 className="text-3xl font-bold">Analytics</h1>
-        <p className="text-muted-foreground">
-          Portfolio insights and performance metrics
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h1 className="text-3xl font-bold">Analytics</h1>
+            <p className="text-muted-foreground">
+              Portfolio insights and performance metrics
+            </p>
+          </div>
+          <ConnectionStatus
+            isConnected={isConnected}
+            connectionError={connectionError}
+            lastUpdateTime={lastUpdateTime}
+            className="self-start sm:self-center"
+          />
+        </div>
       </FadeInUp>
 
       <motion.div
@@ -256,4 +279,6 @@ export default function Analytics() {
 
     </div>
   );
-}
+};
+
+export default Analytics;

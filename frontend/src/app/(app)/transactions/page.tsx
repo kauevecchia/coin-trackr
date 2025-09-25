@@ -19,7 +19,7 @@ import TransactionCard from "@/components/TransactionCard";
 import { motion } from "framer-motion";
 import { FadeInUp } from "@/components/PageTransition";
 
-export const Transactions = () => {
+const Transactions = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     transactions, 
@@ -165,27 +165,33 @@ export const Transactions = () => {
     }
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <FadeInUp>
-          <h1 className="text-3xl font-bold">Transactions</h1>
-          <p className="text-muted-foreground">
-            Your cryptocurrency buy and sell history
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between sm:w-full gap-2">
+            <div>
+              <h1 className="text-3xl font-bold">Transactions</h1>
+              <p className="text-muted-foreground">
+                Your cryptocurrency buy and sell history
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex-shrink-0"
+              >
+                <Button
+                    className="bg-gradient-to-r from-primary to-primary-glow text-muted dark:text-foreground hover:text-muted hover:scale-[1.03] transition-all cursor-pointer min-w-8 duration-200 ease-linear w-full sm:w-auto"
+                    onClick={() => {setIsOpen(true)}}
+                  >
+                    <CirclePlus />
+                    <span className="font-medium">New Transaction</span>
+                  </Button>
+              </motion.div>
+            </div>
+          </div>
         </FadeInUp>
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex-shrink-0"
-        >
-          <Button
-              className="bg-gradient-to-r from-primary to-primary-glow text-muted dark:text-foreground hover:text-muted hover:scale-[1.03] transition-all cursor-pointer min-w-8 duration-200 ease-linear w-full sm:w-auto"
-              onClick={() => {setIsOpen(true)}}
-            >
-              <CirclePlus />
-              <span className="font-medium">New Transaction</span>
-            </Button>
-        </motion.div>
       </div>
 
       {transactionsLoading || cryptoLoading ? (
@@ -452,6 +458,6 @@ export const Transactions = () => {
       />
     </div>
   );
-}
+};
 
 export default Transactions;

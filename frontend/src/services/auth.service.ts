@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 import { api, isTokenExpired } from "./api";
 
@@ -13,10 +12,6 @@ interface DecodedToken {
   email?: string;
   name?: string;
   exp: number;
-}
-
-interface ApiErrorResponse {
-  message: string;
 }
 
 interface LoginResponse {

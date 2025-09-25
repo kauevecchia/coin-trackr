@@ -47,8 +47,8 @@ export const useTransactions = () => {
     try {
       const transactions = await transactionsService.getUserTransactions();
       setTransactions(transactions);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to fetch transactions.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to fetch transactions.";
       setError(errorMessage);
       setLoading(false);
       throw error;
@@ -64,8 +64,8 @@ export const useTransactions = () => {
       addTransaction(response.transaction);
       setLoading(false);
       return response;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to create buy transaction.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to create buy transaction.";
       setError(errorMessage);
       setLoading(false);
       throw error;
@@ -81,8 +81,8 @@ export const useTransactions = () => {
       addTransaction(response.transaction);
       setLoading(false);
       return response;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to create sell transaction.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to create sell transaction.";
       setError(errorMessage);
       setLoading(false);
       throw error;
@@ -97,8 +97,8 @@ export const useTransactions = () => {
       await transactionsService.deleteTransaction(transactionId);
       removeTransaction(transactionId);
       setLoading(false);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to delete transaction.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to delete transaction.";
       setError(errorMessage);
       setLoading(false);
       throw error;

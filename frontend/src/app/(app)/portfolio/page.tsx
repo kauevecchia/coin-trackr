@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { useCrypto } from "@/hooks/useCrypto";
+import { usePriceUpdates } from "@/hooks/usePriceUpdates";
+import ConnectionStatus from "@/components/ConnectionStatus";
 import { PortfolioTable } from "@/components/PortfolioTable";
 import { CryptoDetails } from "@/components/CryptoDetails";
 import { Button } from "@/components/ui/button";
@@ -21,8 +23,9 @@ const Portfolio = () => {
     error, 
     fetchTransactions 
   } = useTransactionsContext();
-  const { cryptos, isLoading: cryptoLoading, error: cryptoError } = useCrypto();
+  const { cryptos, isLoading: cryptoLoading, error: cryptoError, refetch: refetchCryptos } = useCrypto();
   const portfolio = usePortfolio(transactions, cryptos);
+  const { isConnected, connectionError, lastUpdateTime } = usePriceUpdates(refetchCryptos);
 
   const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
 
@@ -151,10 +154,20 @@ const Portfolio = () => {
   return (
     <div className="space-y-6">
       <FadeInUp>
-        <h1 className="text-3xl font-bold">Portfolio</h1>
-        <p className="text-muted-foreground">
-          Your cryptocurrency investments
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h1 className="text-3xl font-bold">Portfolio</h1>
+            <p className="text-muted-foreground">
+              Your cryptocurrency investments
+            </p>
+          </div>
+          <ConnectionStatus
+            isConnected={isConnected}
+            connectionError={connectionError}
+            lastUpdateTime={lastUpdateTime}
+            className="self-start sm:self-center"
+          />
+        </div>
       </FadeInUp>
 
       <motion.div

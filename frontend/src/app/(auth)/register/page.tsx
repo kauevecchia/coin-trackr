@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { Bitcoin } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function Register() {
+const Register = () => {
   const router = useRouter();
   const { register, isLoading } = useAuth();
 
@@ -299,4 +299,6 @@ export default function Register() {
       </Card>
     </motion.div>
   );
-}
+};
+
+export default Register;

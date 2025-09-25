@@ -71,14 +71,13 @@ export const NewTransactionModal = ({ isOpen, onOpenChange }: NewTransactionModa
         transactionDate: new Date(transactionDate),
       };
 
-      let response;
       if (transactionType === 'BUY') {
-        response = await createBuyTransaction(transactionData);
+        await createBuyTransaction(transactionData);
       } else {
-        response = await createSellTransaction(transactionData);
+        await createSellTransaction(transactionData);
       }
 
-      toast.success(response.message);
+      toast.success('Transaction created successfully!');
       resetForm();
       onOpenChange(false);
       
