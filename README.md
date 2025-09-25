@@ -1,16 +1,13 @@
-<div align="center">
-  <img src="frontend/public/images/dashboard-screenshot.png" alt="CoinTrackr Logo" width="120" height="120">
-  
-  # CoinTrackr
-  
-  **Track Your Crypto Portfolio Like a Pro**
-</div>
+# CoinTrackr
+
+**Track Your Crypto Portfolio Like a Pro**
 
 CoinTrackr is a modern cryptocurrency portfolio tracking application that helps you monitor your crypto investments, track real-time prices, and analyze your portfolio performance with an intuitive dashboard. Built with cutting-edge technologies, it provides transparency, security, and comprehensive analytics for your digital assets.
 
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
   - [Frontend](#frontend)
   - [Backend](#backend)
@@ -29,6 +26,81 @@ CoinTrackr is a modern cryptocurrency portfolio tracking application that helps 
 - **Secure Authentication**: JWT-based login/register system with encrypted passwords
 - **Transaction History**: Complete transaction log with filtering capabilities
 - **Responsive Design**: Mobile-friendly interface with modern UI components
+
+## Project Structure
+
+### Front-End
+
+```
+frontend/                    # Next.js React application
+├── src/
+│   ├── app/                 # App Router pages and layouts
+│   │   ├── (app)/          # Protected app routes
+│   │   │   ├── account/    # User account management
+│   │   │   ├── analytics/  # Portfolio analytics
+│   │   │   ├── dashboard/ # Main dashboard
+│   │   │   ├── portfolio/ # Portfolio overview
+│   │   │   └── transactions/ # Transaction management
+│   │   └── (auth)/         # Authentication routes
+│   │       ├── login/      # Login page
+│   │       └── register/   # Registration page
+│   ├── components/         # Reusable UI components
+│   │   ├── analytics/      # Analytics components
+│   │   ├── auth/          # Authentication components
+│   │   └── ui/            # Base UI components (shadcn/ui)
+│   ├── hooks/             # Custom React hooks
+│   ├── contexts/          # React context providers
+│   ├── services/          # API service layers
+│   ├── schemas/           # Form validation schemas
+│   ├── lib/               # Utility libraries
+│   │   └── recharts/      # Chart components
+│   └── styles/            # Global styles
+├── public/                # Static assets
+│   └── images/            # Image assets
+├── components.json        # shadcn/ui configuration
+├── next.config.ts         # Next.js configuration
+├── package.json           # Frontend dependencies
+└── tsconfig.json          # TypeScript configuration
+```
+
+### Back-End
+
+```
+backend/                   # Node.js Express API
+├── src/
+│   ├── http/              # HTTP layer
+│   │   ├── controllers/   # Route controllers
+│   │   │   ├── admin/     # Admin endpoints
+│   │   │   ├── crypto/    # Crypto data endpoints
+│   │   │   ├── transactions/ # Transaction endpoints
+│   │   │   └── users/     # User management endpoints
+│   │   └── middlewares/   # Express middlewares
+│   ├── use-cases/         # Business logic layer
+│   │   ├── factories/     # Use case factories
+│   │   └── errors/        # Custom error classes
+│   ├── repositories/      # Data access layer
+│   │   ├── prisma/        # Prisma implementations
+│   │   └── in-memory/     # In-memory implementations (testing)
+│   ├── services/          # External service integrations
+│   ├── lib/               # Shared utilities
+│   ├── cron/              # Scheduled tasks
+│   ├── config/            # Configuration files
+│   ├── env/               # Environment configuration
+│   ├── utils/             # Utility functions
+│   │   └── test/          # Test utilities
+│   ├── scripts/           # Utility scripts
+│   └── generated/         # Generated files
+├── prisma/                # Database schema and migrations
+│   ├── migrations/        # Database migration files
+│   └── vitest-environment-prisma/ # Test environment setup
+├── docker-compose.yml    # Production Docker setup
+├── docker-compose.dev.yml # Development Docker setup
+├── Dockerfile            # Production Docker image
+├── Dockerfile.dev        # Development Docker image
+├── package.json          # Backend dependencies
+└── tsconfig.json         # TypeScript configuration
+└── README.md                 # Project documentation
+```
 
 ## Technologies Used
 
@@ -153,10 +225,6 @@ Before you start, ensure you have `node`, `npm`, and `docker` installed on your 
 - **👤 Account Management**: User profile management and password reset functionality
 - **📋 Transaction History**: Complete transaction log with filtering capabilities
 - **🛡️ Data Security**: Enterprise-grade security and encryption
-
-## Conclusion
-
-CoinTrackr provides a comprehensive solution for cryptocurrency portfolio management, combining modern web technologies with real-time data updates to deliver an exceptional user experience. Whether you're a casual investor or a serious trader, CoinTrackr helps you make informed decisions about your crypto investments.
 
 ---
 
