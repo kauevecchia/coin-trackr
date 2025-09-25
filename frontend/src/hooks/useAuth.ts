@@ -52,8 +52,8 @@ export const useAuth = () => {
     try {
       const { user } = await authService.login(email, password);
       setAuthenticated(user);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Login failed. Please check your credentials.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Login failed. Please check your credentials.";
       setError(errorMessage);
       setUnauthenticated();
       throw error;
@@ -67,8 +67,8 @@ export const useAuth = () => {
     try {
       await authService.register(name, email, password);
       await login(email, password);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Registration failed.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Registration failed.";
       setError(errorMessage);
       setUnauthenticated();
       throw error;
@@ -82,8 +82,8 @@ export const useAuth = () => {
     try {
       await authService.logout();
       setUnauthenticated();
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Logout failed.";
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Logout failed.";
       setError(errorMessage);
       setUnauthenticated();
       throw error;
@@ -120,7 +120,6 @@ export const useAuth = () => {
       const user = authService.getUserFromToken(storedToken);
       
       // if token is close to expiring (less than 5 minutes), try to refresh
-      const decoded = authService.getUserFromToken(storedToken);
       const tokenExp = JSON.parse(atob(storedToken.split('.')[1])).exp;
       const currentTime = Date.now() / 1000;
       const timeUntilExpiry = tokenExp - currentTime;
@@ -129,7 +128,7 @@ export const useAuth = () => {
         try {
           const { user: refreshedUser } = await authService.refreshToken();
           setAuthenticated(refreshedUser);
-        } catch (refreshError) {
+        } catch {
           // if refresh fails, the token is probably invalid
           authService.clearStoredToken();
           setUnauthenticated();
@@ -138,9 +137,9 @@ export const useAuth = () => {
       } else {
         setAuthenticated(user);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       authService.clearStoredToken();
-      const errorMessage = error.message || "Session expired. Please log in again.";
+      const errorMessage = (error as { message?: string }).message || "Session expired. Please log in again.";
       setError(errorMessage);
       setUnauthenticated();
       throw error;
