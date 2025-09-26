@@ -38,30 +38,7 @@ const Dashboard = () => {
   const totalPnLPercentage = totalInvested > 0 ? (totalPnL / totalInvested) * 100 : 0;
 
   if (isLoading || transactionsLoading || cryptoLoading) {
-    return (
-      <motion.div 
-        className="flex items-center justify-center min-h-screen"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="text-center">
-          <motion.div 
-            className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.p 
-            className="mt-2"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            Loading dashboard...
-          </motion.p>
-        </div>
-      </motion.div>
-    );
+    return null;
   }
 
   if (!isAuthenticated || !user) {
