@@ -13,6 +13,7 @@ const io = new Server(server, {
     origin: [
       'http://localhost:3000',
       'http://127.0.0.1:3000',
+      'https://coin-trackr-gamma.vercel.app',
       process.env.FRONTEND_URL || 'http://localhost:3000'
     ],
     credentials: true,
@@ -52,10 +53,19 @@ WebSocketService.initialize(io)
 
 io.on('connection', (socket) => {
   console.log(`🟢 Client connected: ${socket.id} (User: ${socket.userId})`)
-  
+  console.log(`🔍 Connection details:`, {
+    id: socket.id,
+    userId: socket.userId,
+    handshake: {
+      headers: socket.handshake.headers,
+      auth: socket.handshake.auth,
+      address: socket.handshake.address,
+      time: socket.handshake.time
+    }
+  })
 
-  socket.on('disconnect', () => {
-    console.log(`🔴 Client disconnected: ${socket.id} (User: ${socket.userId})`)
+  socket.on('disconnect', (reason) => {
+    console.log(`🔴 Client disconnected: ${socket.id} (User: ${socket.userId}) - Reason: ${reason}`)
   })
 })
 

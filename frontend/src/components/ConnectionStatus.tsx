@@ -65,6 +65,7 @@ const ConnectionStatus = ({
       <span>
         {isConnected ? "Live updates" : "Offline"}
         {lastUpdateTime && isConnected && timeAgo && ` (${timeAgo})`}
+        {process.env.NODE_ENV === 'development' && connectionError && ` - ${connectionError}`}
       </span>
       {connectionError && (
         <motion.span

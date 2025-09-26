@@ -75,12 +75,22 @@ export const usePriceUpdates = (onPricesUpdated?: () => void): UsePriceUpdatesRe
     // connection events
     newSocket.on('connect', () => {
       console.log('🟢 WebSocket connected successfully');
+      console.log('🔍 WebSocket connection details:', {
+        id: newSocket.id,
+        transport: newSocket.io.engine.transport.name,
+        url: serverUrl
+      });
       setIsConnected(true);
       setConnectionError(null);
     });
 
     newSocket.on('disconnect', (reason) => {
       console.log('🔴 WebSocket disconnected:', reason);
+      console.log('🔍 Disconnect details:', {
+        reason,
+        id: newSocket.id,
+        wasConnected: isConnected
+      });
       setIsConnected(false);
       
       if (reason !== 'io client disconnect') {
@@ -115,12 +125,35 @@ export const usePriceUpdates = (onPricesUpdated?: () => void): UsePriceUpdatesRe
     // main event: price update
     newSocket.on('crypto-prices-updated', handlePriceUpdate);
 
+    // reconnection events
+    newSocket.io.on('reconnect', (attemptNumber) => {
+      console.log('🔄 WebSocket reconnected after', attemptNumber, 'attempts');
+      setIsConnected(true);
+      setConnectionError(null);
+    });
+
+    newSocket.io.on('reconnect_attempt', (attemptNumber) => {
+      console.log('🔄 WebSocket reconnection attempt #', attemptNumber);
+      setConnectionError(`Reconnecting... (attempt ${attemptNumber})`);
+    });
+
+    newSocket.io.on('reconnect_error', (error) => {
+      console.error('❌ WebSocket reconnection error:', error);
+      setConnectionError(`Reconnection failed: ${error.message}`);
+    });
+
+    newSocket.io.on('reconnect_failed', () => {
+      console.error('❌ WebSocket reconnection failed after all attempts');
+      setConnectionError('Connection failed - please refresh the page');
+      setIsConnected(false);
+    });
+
     // cleanup on component unmount
     return () => {
       console.log('🔌 Cleaning up WebSocket connection');
       newSocket.close();
     };
-  }, [handlePriceUpdate, isAuthenticated, token]);
+  }, [handlePriceUpdate, isAuthenticated, token, isConnected]);
 
   return {
     isConnected,
