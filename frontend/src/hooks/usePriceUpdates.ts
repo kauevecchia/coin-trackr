@@ -88,8 +88,7 @@ export const usePriceUpdates = (onPricesUpdated?: () => void): UsePriceUpdatesRe
       console.log('🔴 WebSocket disconnected:', reason);
       console.log('🔍 Disconnect details:', {
         reason,
-        id: newSocket.id,
-        wasConnected: isConnected
+        id: newSocket.id
       });
       setIsConnected(false);
       
@@ -153,7 +152,7 @@ export const usePriceUpdates = (onPricesUpdated?: () => void): UsePriceUpdatesRe
       console.log('🔌 Cleaning up WebSocket connection');
       newSocket.close();
     };
-  }, [handlePriceUpdate, isAuthenticated, token, isConnected]);
+  }, [handlePriceUpdate, isAuthenticated, token]);
 
   return {
     isConnected,
