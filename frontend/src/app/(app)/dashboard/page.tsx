@@ -253,12 +253,12 @@ const Dashboard = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button 
-                  className="mt-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80" 
-                  onClick={() => setIsOpen(true)}
+                <Button
+                  className="bg-gradient-to-r from-primary to-primary-glow text-muted dark:text-foreground hover:text-muted hover:scale-105 active:scale-95 transition-all cursor-pointer min-w-8 duration-200 ease-linear w-full sm:w-auto flex-shrink-0 mt-2"
+                  onClick={() => {setIsOpen(true)}}
                 >
-                  <CirclePlus className="w-4 h-4" />
-                  New Transaction
+                  <CirclePlus />
+                  <span className="font-medium">New Transaction</span>
                 </Button>
               </motion.div>
             </motion.div>

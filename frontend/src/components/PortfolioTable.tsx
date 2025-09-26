@@ -68,9 +68,6 @@ export function PortfolioTable({ portfolio, isLoading = false, onCryptoClick }: 
         transition={{ duration: 0.5 }}
       >
         <Card>
-          <CardHeader>
-            <CardTitle>Portfolio</CardTitle>
-          </CardHeader>
           <CardContent>
             <div className="text-center p-8">
               <motion.p 
