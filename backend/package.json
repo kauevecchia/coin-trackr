@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start:prod": "node dist/server.js",
     "start:dev": "npx tsx watch src/server.ts",
     "start": "node build/server.js",
     "build": "tsup",
     "clean": "rimraf build src/generated",
-    "test": "vitest run --dir src/use-cases/",
+    "test": "vitest run --dir src/use-cases/",  
     "test:watch": "vitest",
     "test:e2e": "vitest run --dir src/http",
     "test:e2e:watch": "vitest --dir src/http",
