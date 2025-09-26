@@ -28,7 +28,7 @@ const Transactions = () => {
     fetchTransactions,
     deleteTransaction
   } = useTransactions();
-  const { cryptos, isLoading: cryptoLoading } = useCrypto();
+  const { cryptos } = useCrypto();
   const { formatCurrency, formatCrypto, formatPercentage } = useFormatters();
   
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
