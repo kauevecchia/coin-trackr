@@ -14,6 +14,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
@@ -51,6 +52,7 @@ const data = {
 export function NavMain() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -69,7 +71,15 @@ export function NavMain() {
                 whileHover={{ x: isActive ? 0 : 5 }}
               >
                 <SidebarMenuItem>
-                  <LoadingLink href={item.url}>
+                  <LoadingLink 
+                    href={item.url}
+                    onNavigate={() => {
+                      // Close mobile sidebar when navigating
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                  >
                     <SidebarMenuButton
                       tooltip={item.title}
                       className={cn(
