@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { CirclePlus, PlusCircle, Trash2 } from "lucide-react";
+import { CirclePlus, Trash2 } from "lucide-react";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useCrypto } from "@/hooks/useCrypto";
 import { Transaction } from "@/services/transactions.service";
@@ -15,8 +15,11 @@ import { toast } from "sonner";
 import Image from "next/image";
 import NewTransactionModal from "@/components/NewTransactionModal";
 import TransactionFilter from "@/components/TransactionFilter";
+import TransactionCard from "@/components/TransactionCard";
+import { motion } from "framer-motion";
+import { FadeInUp } from "@/components/PageTransition";
 
-export default function Transactions() {
+const Transactions = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     transactions, 
@@ -63,7 +66,6 @@ export default function Transactions() {
     setTransactionToDelete(null);
   };
 
-  // Calculate unique cryptos for filter
   const uniqueCryptos = transactions?.reduce((acc, transaction) => {
     const existing = acc.find(crypto => crypto.symbol === transaction.crypto_symbol);
     if (existing) {
@@ -78,7 +80,6 @@ export default function Transactions() {
     return acc;
   }, [] as Array<{ symbol: string; name: string; count: number }>) || [];
 
-  // Filter transactions based on selected cryptos and types
   const filteredTransactions = (transactions || []).filter(transaction => {
     const cryptoMatch = selectedCryptos.length === 0 || selectedCryptos.includes(transaction.crypto_symbol);
     const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(transaction.transaction_type as 'BUY' | 'SELL');
@@ -109,12 +110,28 @@ export default function Transactions() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <motion.div 
+        className="flex items-center justify-center min-h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2">Loading transactions...</p>
+          <motion.div 
+            className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.p 
+            className="mt-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            Loading transactions...
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -139,7 +156,6 @@ export default function Transactions() {
   }
 
   return (
-    
     <div className="space-y-6">
       { isOpen && 
        <NewTransactionModal
@@ -147,69 +163,142 @@ export default function Transactions() {
         onOpenChange={setIsOpen}
       />
     }
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Transactions</h1>
-          <p className="text-muted-foreground">
-            Your cryptocurrency buy and sell history
-          </p>
-        </div>
-        <Button
-            className="bg-gradient-to-r from-primary to-primary-glow text-muted dark:text-foreground hover:text-muted hover:scale-[1.03] transition-all cursor-pointer min-w-8 duration-200 ease-linear"
-            onClick={() => {setIsOpen(true)}}
-          >
-            <CirclePlus />
-            <span className="font-medium">New Transaction</span>
-          </Button>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <FadeInUp>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between sm:w-full gap-2">
+            <div>
+              <h1 className="text-3xl font-bold">Transactions</h1>
+              <p className="text-muted-foreground">
+                Your cryptocurrency buy and sell history
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex-shrink-0"
+              >
+                <Button
+                    className="bg-gradient-to-r from-primary to-primary-glow text-muted dark:text-foreground hover:text-muted hover:scale-[1.03] transition-all cursor-pointer min-w-8 duration-200 ease-linear w-full sm:w-auto"
+                    onClick={() => {setIsOpen(true)}}
+                  >
+                    <CirclePlus />
+                    <span className="font-medium">New Transaction</span>
+                  </Button>
+              </motion.div>
+            </div>
+          </div>
+        </FadeInUp>
       </div>
 
       {transactionsLoading || cryptoLoading ? (
-        <div className="flex items-center justify-center">
+        <motion.div 
+          className="flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-2">Loading transactions...</p>
+            <motion.div 
+              className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.p 
+              className="mt-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              Loading transactions...
+            </motion.p>
           </div>
-        </div>
+        </motion.div>
       ) : transactions.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground mb-4">
-              No transactions found. Start by adding your first cryptocurrency transaction.
-            </p>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add First Transaction
-            </Button>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card>
+            <CardContent className="p-6 text-center">
+              <motion.p 
+                className="text-muted-foreground mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                No transactions found. Start by adding your first cryptocurrency transaction.
+              </motion.p>
+            </CardContent>
+          </Card>
+        </motion.div>
       ) : (
         <>
-          <TransactionFilter
-            uniqueCryptos={uniqueCryptos}
-            selectedCryptos={selectedCryptos}
-            onSelectedCryptosChange={setSelectedCryptos}
-            selectedTypes={selectedTypes}
-            onSelectedTypesChange={setSelectedTypes}
-          />
+          <FadeInUp delay={0.3}>
+            <TransactionFilter
+              uniqueCryptos={uniqueCryptos}
+              selectedCryptos={selectedCryptos}
+              onSelectedCryptosChange={setSelectedCryptos}
+              selectedTypes={selectedTypes}
+              onSelectedTypesChange={setSelectedTypes}
+            />
+          </FadeInUp>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Transaction History
-                {selectedCryptos.length > 0 && (
-                  <span className="text-sm font-normal text-muted-foreground ml-2">
-                    ({filteredTransactions.length} of {transactions.length} transactions)
-                  </span>
-                    )}
-                  {transactions.length > 0 && (
-                    <span className="text-sm font-normal text-muted-foreground ml-2">
-                      ({transactions.length} transactions)
-                    </span>
-                  )}
-              </CardTitle>
-            </CardHeader>
-          <CardContent>
-            <Table>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card className="hover:shadow-lg transition-shadow duration-300">
+              <CardHeader>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <h2 className="flex-shrink-0">Transaction History</h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm font-normal text-muted-foreground">
+                      {selectedCryptos.length > 0 && (
+                        <motion.span 
+                          className="flex-shrink-0"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.6 }}
+                        >
+                          {filteredTransactions.length} of {transactions.length} transactions
+                        </motion.span>
+                      )}
+                      {transactions.length > 0 && (
+                        <motion.div 
+                          className="flex flex-wrap items-center gap-2"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.6 }}
+                        >
+                          {(selectedCryptos.length === 0 && selectedTypes.length === 0) && (
+                            <span className="flex-shrink-0">{transactions.length} total</span>
+                          )}
+                          <span className="text-green-800 dark:text-green-400 flex-shrink-0">
+                            ({filteredTransactions.filter(t => t.transaction_type === 'BUY').length} buys)
+                          </span>
+                          <span className="text-red-800 dark:text-red-400 flex-shrink-0">
+                            ({filteredTransactions.filter(t => t.transaction_type === 'SELL').length} sells)
+                          </span>
+                        </motion.div>
+                      )}
+                    </div>
+                  </CardTitle>
+                </motion.div>
+              </CardHeader>
+          <CardContent className="overflow-hidden">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <Table className="min-w-[800px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
@@ -227,13 +316,19 @@ export default function Transactions() {
               <TableBody>
                 {filteredTransactions
                   .sort((a, b) => new Date(b.transaction_date).getTime() - new Date(a.transaction_date).getTime())
-                  .map((transaction) => {
+                  .map((transaction, index) => {
                     const { pnl, pnlPercentage, finalBalance } = calculateTransactionPnL(transaction);
                     
                     return (
-                      <TableRow 
+                      <motion.tr
                         key={transaction.id}
-                        className={transaction.transaction_type === 'SELL' ? 'bg-red-50 dark:bg-red-950/20' : ''}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.8 + index * 0.05, duration: 0.3 }}
+                        className={`${transaction.transaction_type === 'SELL' 
+                          ? 'bg-red-100/70 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-950/60' 
+                          : 'hover:bg-muted/50'
+                        } transition-colors duration-200`}
                       >
                         <TableCell>
                           {new Date(transaction.transaction_date).toLocaleDateString()}
@@ -248,8 +343,8 @@ export default function Transactions() {
                         <TableCell>
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             transaction.transaction_type === 'BUY'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                              ? 'bg-green-200/60 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                              : 'bg-red-200/60 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                           }`}>
                             {transaction.transaction_type}
                           </span>
@@ -271,10 +366,10 @@ export default function Transactions() {
                           ) : (
                             <span className={`inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-md ${
                               pnl > 0 
-                                ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                                ? 'bg-green-200/60 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
                                 : pnl < 0 
-                                ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                                ? 'bg-red-200/60 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                                : 'bg-gray-200/60 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
                             }`}>
                               {formatCurrency(pnl)}
                             </span>
@@ -310,19 +405,48 @@ export default function Transactions() {
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </TableCell>
-                      </TableRow>
+                      </motion.tr>
                     );
                   })}
               </TableBody>
             </Table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {filteredTransactions
+                .sort((a, b) => new Date(b.transaction_date).getTime() - new Date(a.transaction_date).getTime())
+                .map((transaction, index) => {
+                  const { pnl, pnlPercentage, finalBalance } = calculateTransactionPnL(transaction);
+                  
+                  return (
+                    <TransactionCard
+                      key={transaction.id}
+                      transaction={transaction}
+                      index={index}
+                      pnl={pnl}
+                      pnlPercentage={pnlPercentage}
+                      finalBalance={finalBalance}
+                      cryptoImageUrl={cryptos?.find(crypto => crypto.symbol === transaction.crypto_symbol)?.image_url || undefined}
+                      onDelete={handleDeleteTransaction}
+                    />
+                  );
+                })}
+            </div>
             
             {filteredTransactions.length === 0 && transactions.length > 0 && (
-              <div className="text-center py-8 text-muted-foreground">
+              <motion.div 
+                className="text-center py-8 text-muted-foreground"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
                 No transactions found matching the current filter
-              </div>
+              </motion.div>
             )}
           </CardContent>
         </Card>
+          </motion.div>
         </>
       )}
 
@@ -334,4 +458,6 @@ export default function Transactions() {
       />
     </div>
   );
-}
+};
+
+export default Transactions;

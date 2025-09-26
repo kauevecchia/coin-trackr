@@ -9,9 +9,9 @@ const transactionsRoutes = Router()
 
 transactionsRoutes.use(verifyJWT)
 
-transactionsRoutes.post('/transactions/buy', registerBuyTransaction)
-transactionsRoutes.post('/transactions/sell', registerSellTransaction)
-transactionsRoutes.delete('/transactions/delete', deleteTransaction)
-transactionsRoutes.get('/transactions/list', listUserTransactions)
+transactionsRoutes.post('/buy', registerBuyTransaction)
+transactionsRoutes.post('/sell', registerSellTransaction)
+transactionsRoutes.delete('/delete', deleteTransaction)
+transactionsRoutes.get('/list', listUserTransactions)
 
 export { transactionsRoutes }

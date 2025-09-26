@@ -20,6 +20,7 @@ import {
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { useLoading } from '@/contexts/LoadingContext'
 
 export function NavUser({
   user,
@@ -32,11 +33,12 @@ export function NavUser({
   const { isMobile } = useSidebar()
   const router = useRouter()
   const { logout } = useAuth()
+  const { startLoading } = useLoading()
 
   const handleLogout = () => {
     logout()
-    toast.success('Até a próxima!')
     router.push('/login')
+    toast.success('See you next time!')
   }
 
   return (
@@ -85,7 +87,10 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push('/dashboard/account')}>
+              <DropdownMenuItem onClick={() => {
+                startLoading()
+                router.push('/account')
+              }}>
                 <UserCircle />
                 Account
               </DropdownMenuItem>

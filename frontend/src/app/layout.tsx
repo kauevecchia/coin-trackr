@@ -11,11 +11,11 @@ export const metadata: Metadata = {
   description: "Manage and track your cryptocurrency portfolio intelligently.",
 };
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={poppins.className}>
@@ -26,4 +26,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

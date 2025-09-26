@@ -6,10 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useEffect } from "react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { useCrypto } from "@/hooks/useCrypto";
+import { usePriceUpdates } from "@/hooks/usePriceUpdates";
+import ConnectionStatus from "@/components/ConnectionStatus";
 import { AnalyticsCards } from "@/components/analytics/AnalyticsCards";
 import { PortfolioDistributionChart } from "@/lib/recharts/PortfolioDistributionChart";
 import { PnLChart } from "@/lib/recharts/PnLChart";
-import { TradingSummary } from "@/components/analytics/TradingSummary";
+import { motion } from "framer-motion";
+import { FadeInUp } from "@/components/PageTransition";
 
 interface PortfolioItem {
   symbol: string;
@@ -50,7 +53,7 @@ const COLORS = [
   '#fef3c7',
 ];
 
-export default function Analytics() {
+const Analytics = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     transactions, 
@@ -58,7 +61,8 @@ export default function Analytics() {
     error, 
     fetchTransactions 
   } = useTransactionsContext();
-  const { cryptos: cryptoDetails, isLoading: cryptoLoading } = useCrypto();
+  const { cryptos: cryptoDetails, isLoading: cryptoLoading, refetch: refetchCryptos } = useCrypto();
+  const { isConnected, connectionError, lastUpdateTime } = usePriceUpdates(refetchCryptos);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -88,9 +92,6 @@ export default function Analytics() {
 
 
 
-  const buyTransactions = transactions?.filter(t => t.transaction_type === 'BUY') || [];
-  const sellTransactions = transactions?.filter(t => t.transaction_type === 'SELL') || [];
-  const totalTransactions = transactions?.length || 0;
   
 
 
@@ -104,12 +105,28 @@ export default function Analytics() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <motion.div 
+        className="flex items-center justify-center min-h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2">Loading analytics...</p>
+          <motion.div 
+            className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.p 
+            className="mt-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            Loading analytics...
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -137,64 +154,131 @@ export default function Analytics() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <motion.div 
+        className="flex items-center justify-center min-h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2">Loading analytics...</p>
+          <motion.div 
+            className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.p 
+            className="mt-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            Loading analytics...
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   if (portfolio.length === 0) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Analytics</h1>
-          <p className="text-muted-foreground">
-            Portfolio insights and performance metrics
-          </p>
-        </div>
+        <FadeInUp>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+              <h1 className="text-3xl font-bold">Analytics</h1>
+              <p className="text-muted-foreground">
+                Portfolio insights and performance metrics
+              </p>
+            </div>
+            <ConnectionStatus
+              isConnected={isConnected}
+              connectionError={connectionError}
+              lastUpdateTime={lastUpdateTime}
+              className="self-start sm:self-center"
+            />
+          </div>
+        </FadeInUp>
         
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground">
-              No data to analyze yet. Start by adding some transactions to see your portfolio analytics.
-            </p>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardContent className="p-6 text-center">
+              <motion.p 
+                className="text-muted-foreground"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                No data to analyze yet. Start by adding some transactions to see your portfolio analytics.
+              </motion.p>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Analytics</h1>
-        <p className="text-muted-foreground">
-          Portfolio insights and performance metrics
-        </p>
-      </div>
+      <FadeInUp>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h1 className="text-3xl font-bold">Analytics</h1>
+            <p className="text-muted-foreground">
+              Portfolio insights and performance metrics
+            </p>
+          </div>
+          <ConnectionStatus
+            isConnected={isConnected}
+            connectionError={connectionError}
+            lastUpdateTime={lastUpdateTime}
+            className="self-start sm:self-center"
+          />
+        </div>
+      </FadeInUp>
 
-      <AnalyticsCards 
-        totalValue={totalValue}
-        totalInvested={totalInvested}
-        totalPnL={totalPnL}
-        totalPnLPercentage={totalPnLPercentage}
-        cryptoCount={cryptoCount}
-        bestPerformer={bestPerformer as PortfolioItem}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <AnalyticsCards 
+          totalValue={totalValue}
+          totalInvested={totalInvested}
+          totalPnL={totalPnL}
+          totalPnLPercentage={totalPnLPercentage}
+          cryptoCount={cryptoCount}
+          bestPerformer={bestPerformer as PortfolioItem}
+        />
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PortfolioDistributionChart data={portfolioDistribution} />
-        <PnLChart data={pnlData} />
-      </div>
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
+        <motion.div
+          initial={{ opacity: 0, x: 0 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
+          <PortfolioDistributionChart data={portfolioDistribution} />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: 0 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+        >
+          <PnLChart data={pnlData} />
+        </motion.div>
+      </motion.div>
 
-      <TradingSummary 
-        buyTransactions={buyTransactions.length}
-        sellTransactions={sellTransactions.length}
-        totalTransactions={totalTransactions}
-      />
     </div>
   );
-}
+};
+
+export default Analytics;

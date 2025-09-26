@@ -35,8 +35,12 @@ services:
       NODE_ENV: dev
       PORT: 3333
       DATABASE_URL: postgresql://docker:docker@postgres:5432/coin-tracker-pg?schema=public
-      JWT_SECRET: your-super-secret-jwt-key-change-in-production
-      COINGECKO_API_KEY: your-coingecko-api-key
+      JWT_SECRET: ${JWT_SECRET}
+      COINGECKO_API_KEY: ${COINGECKO_API_KEY}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
+      CRON_ENABLED: ${CRON_ENABLED:-true}
+      CRON_SCHEDULE: ${CRON_SCHEDULE:-*/5 * * * *}
+      CRON_TIMEZONE: ${CRON_TIMEZONE:-America/Sao_Paulo}
     volumes:
       - .:/app
       - /app/node_modules

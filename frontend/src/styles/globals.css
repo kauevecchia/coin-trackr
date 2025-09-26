@@ -34,6 +34,9 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
   --color-primary-glow: var(--primary-glow);
+  --color-gradient-amber: var(--gradient-amber);
+  --color-gradient-sky: var(--gradient-sky);
+  --color-gradient-indigo: var(--gradient-indigo);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -42,77 +45,136 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --gradient-crypto: var(--gradient-crypto);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.60 0.25 155);
-  --primary-foreground: oklch(0.1 0.02 285.885);
-  --primary-glow: oklch(0.70 0.30 150);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  
+  /* Light theme - clean and modern */
+  --background: hsl(210 40% 98%);
+  --foreground: hsl(222.2 84% 4.9%);
+  
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222.2 84% 4.9%);
+  
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222.2 84% 4.9%);
+  
+  /* Primary - Based on gradient-sky blue */
+  --primary: hsl(198.6deg 88.7% 48.4%);
+  --primary-foreground: hsl(0 0% 100%);
+  --primary-glow: hsl(198.6deg 88.7% 58.4%);
+  
+  /* Custom gradient colors (preserved) */
+  --gradient-amber: hsl(50.4deg 97.8% 63.5%);
+  --gradient-sky: hsl(198.6deg 88.7% 48.4%);
+  --gradient-indigo: hsl(244.5deg 57.9% 50.6%);
+  
+  /* Secondary - Warmer blue tone */
+  --secondary: hsl(210 40% 94%);
+  --secondary-foreground: hsl(222.2 47.4% 11.2%);
+  
+  /* Muted - Subtle blue-gray */
+  --muted: hsl(210 40% 96%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
+  
+  /* Accent - Inspired by gradient-indigo */
+  --accent: hsl(244.5deg 57.9% 90.6%);
+  --accent-foreground: hsl(244.5deg 57.9% 20.6%);
+  
+  /* Destructive - Warm red */
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 100%);
+  
+  /* Borders and inputs - subtle blue tint */
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+  --ring: hsl(198.6deg 88.7% 48.4%);
+  
+  /* Chart colors - harmonious palette */
+  --chart-1: hsl(198.6deg 88.7% 48.4%); /* Primary blue */
+  --chart-2: hsl(50.4deg 97.8% 63.5%); /* Amber */
+  --chart-3: hsl(244.5deg 57.9% 50.6%); /* Indigo */
+  --chart-4: hsl(198.6deg 88.7% 68.4%); /* Light blue */
+  --chart-5: hsl(50.4deg 97.8% 53.5%); /* Dark amber */
+  
+  /* Sidebar - clean light theme */
+  --sidebar: hsl(0 0% 100%);
+  --sidebar-foreground: hsl(222.2 84% 4.9%);
+  --sidebar-primary: hsl(198.6deg 88.7% 48.4%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(210 40% 96%);
+  --sidebar-accent-foreground: hsl(222.2 47.4% 11.2%);
+  --sidebar-border: hsl(214.3 31.8% 91.4%);
+  --sidebar-ring: hsl(198.6deg 88.7% 48.4%);
+
+  --gradient-crypto: linear-gradient(135deg, hsl(var(--gradient-amber)) 0%, hsl(var(--gradient-sky)) 50%, hsl(var(--gradient-indigo)) 100%);
+  
+  /* Additional gradients for UI enhancement */
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  --gradient-card: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.60 0.25 155);
-  --primary-foreground: oklch(0.1 0.02 285.885);
-  --primary-glow: oklch(0.70 0.30 150);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.552 0.016 285.938);
+  /* Dark theme - deep blues with warm accents */
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
+  
+  --card: hsl(222.2 84% 6.9%);
+  --card-foreground: hsl(210 40% 98%);
+  
+  --popover: hsl(222.2 84% 6.9%);
+  --popover-foreground: hsl(210 40% 98%);
+  
+  /* Primary - Brighter blue for dark theme */
+  --primary: hsl(198.6deg 88.7% 58.4%);
+  --primary-foreground: hsl(222.2 84% 4.9%);
+  --primary-glow: hsl(198.6deg 88.7% 68.4%);
+  
+  /* Custom gradient colors (preserved) */
+  --gradient-amber: hsl(50.4deg 97.8% 63.5%);
+  --gradient-sky: hsl(198.6deg 88.7% 48.4%);
+  --gradient-indigo: hsl(244.5deg 57.9% 50.6%);
+  
+  /* Secondary - Deep blue-gray */
+  --secondary: hsl(217.2 32.6% 17.5%);
+  --secondary-foreground: hsl(210 40% 98%);
+  
+  /* Muted - Darker blue-gray */
+  --muted: hsl(217.2 32.6% 15.5%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
+  
+  /* Accent - Darker indigo tone */
+  --accent: hsl(244.5deg 57.9% 25.6%);
+  --accent-foreground: hsl(244.5deg 57.9% 85.6%);
+  
+  /* Destructive - Warm red for dark theme */
+  --destructive: hsl(0 84.2% 65.2%);
+  --destructive-foreground: hsl(222.2 84% 4.9%);
+  
+  /* Borders and inputs - subtle blue borders */
+  --border: hsl(217.2 32.6% 20.5%);
+  --input: hsl(217.2 32.6% 18.5%);
+  --ring: hsl(198.6deg 88.7% 58.4%);
+  
+  /* Chart colors - vibrant for dark theme */
+  --chart-1: hsl(198.6deg 88.7% 58.4%); /* Bright blue */
+  --chart-2: hsl(50.4deg 97.8% 68.5%); /* Bright amber */
+  --chart-3: hsl(244.5deg 57.9% 60.6%); /* Bright indigo */
+  --chart-4: hsl(198.6deg 88.7% 78.4%); /* Very light blue */
+  --chart-5: hsl(50.4deg 97.8% 48.5%); /* Darker amber */
+  
+  /* Sidebar - dark blue theme */
+  --sidebar: hsl(222.2 84% 6.9%);
+  --sidebar-foreground: hsl(210 40% 98%);
+  --sidebar-primary: hsl(198.6deg 88.7% 58.4%);
+  --sidebar-primary-foreground: hsl(222.2 84% 4.9%);
+  --sidebar-accent: hsl(217.2 32.6% 17.5%);
+  --sidebar-accent-foreground: hsl(210 40% 98%);
+  --sidebar-border: hsl(217.2 32.6% 20.5%);
+  --sidebar-ring: hsl(198.6deg 88.7% 58.4%);
 }
 
 @layer base {

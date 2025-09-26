@@ -2,6 +2,7 @@ import { fetchFixedCryptosFullDetails } from '@/lib/coingecko'
 import { CryptoCacheRepository } from '@/repositories/crypto-cache-repository'
 import { Prisma } from '@/generated/prisma'
 import { Decimal } from '@prisma/client/runtime/library'
+import { WebSocketService } from '@/services/websocket.service'
 
 export class PopulateFixedCryptoCacheUseCase {
   constructor(private cryptoCacheRepository: CryptoCacheRepository) {}
@@ -39,5 +40,8 @@ export class PopulateFixedCryptoCacheUseCase {
         upsertData,
       )
     }
+
+    // notify via WebSocket that prices have been updated
+    WebSocketService.broadcastPriceUpdate()
   }
 }

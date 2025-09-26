@@ -24,7 +24,7 @@ export function PnLChart({ data }: PnLChartProps) {
         <CardTitle>P&L by Cryptocurrency</CardTitle>
         <BarChart3 className="size-5 text-muted-foreground" />
       </CardHeader>
-      <CardContent>
+      <CardContent className="pl-0 pr-6">
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
