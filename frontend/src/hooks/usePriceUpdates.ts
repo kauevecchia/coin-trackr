@@ -22,7 +22,7 @@ export const usePriceUpdates = (onPricesUpdated?: () => void): UsePriceUpdatesRe
 
   const handlePriceUpdate = useCallback((data: { message: string; timestamp: string }) => {
     console.log('🔄 Crypto prices updated:', data.message);
-    setLastUpdateTime(new Date(data.timestamp));
+    setLastUpdateTime(new Date());
     
     // call callback to reload data
     if (onPricesUpdated) {
