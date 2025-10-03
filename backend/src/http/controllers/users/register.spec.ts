@@ -34,7 +34,7 @@ describe('Register (e2e)', () => {
     const response = await request(testServer).post('/users').send({
       name: 'John Doe',
       email: 'john.doe@example.com',
-      password: '123456',
+      password: '12345678',
     })
 
     expect(response.statusCode).toEqual(201)
@@ -44,7 +44,7 @@ describe('Register (e2e)', () => {
     await request(testServer).post('/users').send({
       name: 'Jane Doe',
       email: 'jane.doe@example.com',
-      password: 'abcdef',
+      password: 'abcdefgh',
     })
 
     const response = await request(testServer).post('/users').send({
@@ -54,6 +54,6 @@ describe('Register (e2e)', () => {
     })
 
     expect(response.statusCode).toEqual(409)
-    expect(response.body).toEqual({ message: 'User already exists' })
+    expect(response.body).toEqual({ message: 'Email already exists.' })
   })
 })
