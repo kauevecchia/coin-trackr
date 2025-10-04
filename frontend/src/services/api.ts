@@ -59,9 +59,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    const authEndpoints = ["/sessions", "/users", "/token/refresh"];
+    const isAuthEndpoint = authEndpoints.some(endpoint => originalRequest.url?.includes(endpoint));
+
     if (
       error.response?.status === 401 &&
-      originalRequest.url !== "/token/refresh"
+      !isAuthEndpoint
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

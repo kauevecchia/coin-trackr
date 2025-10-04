@@ -71,6 +71,7 @@ export const useAuth = () => {
       const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Registration failed.";
       setError(errorMessage);
       setUnauthenticated();
+
       throw error;
     }
   }, [login]);
@@ -142,7 +143,10 @@ export const useAuth = () => {
       const errorMessage = (error as { message?: string }).message || "Session expired. Please log in again.";
       setError(errorMessage);
       setUnauthenticated();
-      throw error;
+      
+      if (!skipLoading) {
+        throw error;
+      }
     }
   }, []);
 
