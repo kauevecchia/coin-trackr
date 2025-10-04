@@ -67,7 +67,7 @@ describe("Logout (E2E)", () => {
 
     expect(refreshResponse.statusCode).toEqual(401);
     expect(refreshResponse.body.message).toEqual(
-      "Refresh token não fornecido."
+      "Refresh token not provided."
     );
   });
 });

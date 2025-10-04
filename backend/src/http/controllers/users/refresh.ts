@@ -14,14 +14,14 @@ export async function refresh(request: Request, response: Response) {
   if (!refreshToken) {
     return response
       .status(401)
-      .json({ message: 'Refresh token não fornecido.' })
+      .json({ message: 'Refresh token not provided.' })
   }
 
   try {
     const decodedToken = verify(refreshToken, env.JWT_SECRET)
 
     if (typeof decodedToken !== 'object' || !('sub' in decodedToken)) {
-      return response.status(401).json({ message: 'Refresh token inválido.' })
+      return response.status(401).json({ message: 'Invalid refresh token.' })
     }
 
     const userId = decodedToken.sub as string

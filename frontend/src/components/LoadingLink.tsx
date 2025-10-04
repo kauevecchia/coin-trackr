@@ -10,9 +10,10 @@ interface LoadingLinkProps {
   children: ReactNode
   className?: string
   onClick?: () => void
+  onNavigate?: () => void
 }
 
-export function LoadingLink({ href, children, className, onClick }: LoadingLinkProps) {
+export function LoadingLink({ href, children, className, onClick, onNavigate }: LoadingLinkProps) {
   const router = useRouter()
   const { startLoading, isLoading } = useLoading()
 
@@ -25,6 +26,10 @@ export function LoadingLink({ href, children, className, onClick }: LoadingLinkP
     
     if (onClick) {
       onClick()
+    }
+    
+    if (onNavigate) {
+      onNavigate()
     }
     
     startLoading()

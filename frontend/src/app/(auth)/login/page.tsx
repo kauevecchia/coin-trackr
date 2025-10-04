@@ -47,6 +47,10 @@ const Login = () => {
         reset()
       } catch (err) {
         console.error("Login failed:", err);
+        
+        const errorMessage = (err as { response?: { data?: { message?: string } } }).response?.data?.message || "Login failed. Please check your credentials.";
+        
+        toast.error(errorMessage);
       }
     };
 

@@ -50,6 +50,10 @@ const Register = () => {
       toast.success("Account created successfully! Welcome to Coin Trackr.");
     } catch (err) {
       console.error("Registration failed:", err);
+      
+      const errorMessage = (err as { response?: { data?: { message?: string } } }).response?.data?.message || "Registration failed. Please try again.";
+      
+      toast.error(errorMessage);
     }
   };
 
