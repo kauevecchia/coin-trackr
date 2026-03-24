@@ -4,12 +4,9 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Install ALL dependencies (including dev dependencies needed for build)
 COPY package*.json ./
 RUN npm ci
-
-# Verify tsx installation
-RUN npx tsx --version
 
 # Copy source code
 COPY . .
@@ -17,8 +14,11 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
+# Build the application
+RUN npm run build
+
 # Expose port
 EXPOSE 3333
 
-# Start the application
-CMD ["npm", "run", "start:dev"] 
+# Start the application in production mode
+CMD ["npm", "run", "start:prod"] 

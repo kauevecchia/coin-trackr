@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: coin-trackr-backend
+    env: node
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3333
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # Render Cron Job - Calls webhook endpoint (RECOMMENDED)
+  # This keeps the web service awake AND updates prices with WebSocket broadcast
+  # IMPORTANT: Replace 'coin-trackr-backend' with your actual Render service name
+  # Or use RENDER_SERVICE_URL environment variable in Render Dashboard
+  - type: cron
+    name: update-crypto-prices
+    schedule: "*/5 * * * *" # Every 5 minutes (before 15min timeout)
+    buildCommand: echo "No build needed for webhook call"
+    # Use environment variable for service URL, or replace with your actual URL
+    startCommand: curl -f -X POST "${RENDER_SERVICE_URL:-https://coin-trackr.onrender.com}/cryptos/update-prices-webhook?apiKey=${CRON_API_KEY}" || exit 1
+    envVars:
+      - key: CRON_API_KEY
+        sync: false # Set this in Render Dashboard
+      - key: RENDER_SERVICE_URL
+        sync: false # Set this in Render Dashboard with your actual service URL

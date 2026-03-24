@@ -59,8 +59,17 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Match auth endpoints exactly (not as substrings)
+    // Avoids false positives like "/token/refresh-status" matching "/token/refresh"
     const authEndpoints = ["/sessions", "/users", "/token/refresh"];
-    const isAuthEndpoint = authEndpoints.some(endpoint => originalRequest.url?.includes(endpoint));
+    const requestUrl = originalRequest.url || "";
+    const urlPath = requestUrl.split("?")[0]; // Remove query params for matching
+    
+    const isAuthEndpoint = authEndpoints.some(endpoint => {
+      // Exact match - ensures no substring false positives
+      // Since axios uses baseURL, originalRequest.url is typically just the path
+      return urlPath === endpoint;
+    });
 
     if (
       error.response?.status === 401 &&

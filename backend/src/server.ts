@@ -14,10 +14,10 @@ const io = new Server(server, {
       'http://localhost:3000',
       'http://127.0.0.1:3000',
       'https://coin-trackr-gamma.vercel.app',
-      process.env.FRONTEND_URL || 'http://localhost:3000'
+      process.env.FRONTEND_URL || 'http://localhost:3000',
     ],
     credentials: true,
-    methods: ['GET', 'POST']
+    methods: ['GET', 'POST'],
   },
   transports: ['websocket', 'polling'],
   allowEIO3: true,
@@ -25,14 +25,16 @@ const io = new Server(server, {
 
 declare module 'socket.io' {
   interface Socket {
-    userId?: string;
+    userId?: string
   }
 }
 
 io.use((socket, next) => {
   try {
-    const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace('Bearer ', '')
-    
+    const token =
+      socket.handshake.auth.token ||
+      socket.handshake.headers.authorization?.replace('Bearer ', '')
+
     if (!token) {
       console.log('❌ WebSocket connection rejected: No token provided')
       return next(new Error('Authentication error: No token provided'))
@@ -40,11 +42,14 @@ io.use((socket, next) => {
 
     const decoded = jwt.verify(token, env.JWT_SECRET) as any
     socket.userId = decoded.sub || decoded.id
-    
+
     console.log(`✅ WebSocket authenticated for user: ${socket.userId}`)
     next()
   } catch (error: any) {
-    console.log('❌ WebSocket authentication failed:', error?.message || 'Unknown error')
+    console.log(
+      '❌ WebSocket authentication failed:',
+      error?.message || 'Unknown error',
+    )
     next(new Error('Authentication error: Invalid token'))
   }
 })
@@ -60,20 +65,35 @@ io.on('connection', (socket) => {
       headers: socket.handshake.headers,
       auth: socket.handshake.auth,
       address: socket.handshake.address,
-      time: socket.handshake.time
-    }
+      time: socket.handshake.time,
+    },
   })
 
   socket.on('disconnect', (reason) => {
-    console.log(`🔴 Client disconnected: ${socket.id} (User: ${socket.userId}) - Reason: ${reason}`)
+    console.log(
+      `🔴 Client disconnected: ${socket.id} (User: ${socket.userId}) - Reason: ${reason}`,
+    )
   })
 })
 
 server.listen(env.PORT, () => {
   console.log(`🚀 HTTP Server Running on port ${env.PORT}!`)
   console.log(`⚡ WebSocket Server Ready!`)
-  
-  PriceUpdaterCron.start()
+
+  // Start internal cron job only if enabled
+  // NOTE: For Render free tier, it's recommended to disable this and use external cron jobs
+  // that call /cryptos/update-prices-webhook endpoint instead
+  if (env.CRON_ENABLED === 'true') {
+    console.log('⏰ Starting internal cron job (node-cron)')
+    PriceUpdaterCron.start()
+  } else {
+    console.log(
+      '⏸️  Internal cron job disabled (using external cron jobs recommended)',
+    )
+    console.log(
+      '💡 Tip: Configure Render Cron Job to call /cryptos/update-prices-webhook endpoint',
+    )
+  }
 })
 
 process.on('SIGTERM', () => {
