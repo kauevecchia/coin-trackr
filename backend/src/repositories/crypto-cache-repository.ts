@@ -8,5 +8,10 @@ export interface CryptoCacheRepository {
     symbol: string,
     data: Prisma.CryptoCacheCreateInput,
   ): Promise<CryptoCache>
+  upsertPrice(
+    symbol: string,
+    createData: Prisma.CryptoCacheCreateInput,
+    priceUpdate: Prisma.CryptoCacheUpdateInput,
+  ): Promise<CryptoCache>
   delete(symbol: string): Promise<void>
 }

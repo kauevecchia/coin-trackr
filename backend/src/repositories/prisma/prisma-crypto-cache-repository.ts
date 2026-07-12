@@ -39,6 +39,20 @@ export class PrismaCryptoCacheRepository implements CryptoCacheRepository {
     return crypto
   }
 
+  async upsertPrice(
+    symbol: string,
+    createData: Prisma.CryptoCacheCreateInput,
+    priceUpdate: Prisma.CryptoCacheUpdateInput,
+  ) {
+    const crypto = await prisma.cryptoCache.upsert({
+      where: { symbol },
+      create: createData,
+      update: priceUpdate,
+    })
+
+    return crypto
+  }
+
   async delete(symbol: string) {
     await prisma.cryptoCache.delete({
       where: {

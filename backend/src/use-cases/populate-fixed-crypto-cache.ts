@@ -1,4 +1,4 @@
-import { fetchFixedCryptosFullDetails } from '@/lib/coingecko'
+import { fetchFixedCryptosFromBinance } from '@/lib/binance'
 import { CryptoCacheRepository } from '@/repositories/crypto-cache-repository'
 import { Prisma } from '@/generated/prisma'
 import { Decimal } from '@prisma/client/runtime/library'
@@ -8,40 +8,44 @@ export class PopulateFixedCryptoCacheUseCase {
   constructor(private cryptoCacheRepository: CryptoCacheRepository) {}
 
   async execute() {
-    let cryptoDetailsFromApi
+    let cryptosFromApi
     try {
-      cryptoDetailsFromApi = await fetchFixedCryptosFullDetails()
+      cryptosFromApi = await fetchFixedCryptosFromBinance()
     } catch (error) {
       throw new Error(
         'Failed to fetch crypto details from external API for cache population.',
       )
     }
 
-    if (!cryptoDetailsFromApi || cryptoDetailsFromApi.length === 0) {
+    if (!cryptosFromApi || cryptosFromApi.length === 0) {
       return
     }
 
     const now = new Date()
 
-    for (const apiCrypto of cryptoDetailsFromApi) {
-      const newPrice = new Decimal(apiCrypto.current_price?.toString() || '0')
-      const imageUrl = apiCrypto.image || null
+    for (const apiCrypto of cryptosFromApi) {
+      const price = new Decimal(apiCrypto.price?.toString() || '0')
 
-      const upsertData: Prisma.CryptoCacheCreateInput = {
-        symbol: apiCrypto.symbol.toUpperCase(),
+      const createData: Prisma.CryptoCacheCreateInput = {
+        symbol: apiCrypto.symbol,
         name: apiCrypto.name,
-        price: newPrice,
-        image_url: imageUrl,
+        price,
+        image_url: null,
         last_updated: now,
       }
 
-      await this.cryptoCacheRepository.upsert(
-        apiCrypto.symbol.toUpperCase(),
-        upsertData,
+      const priceUpdate: Prisma.CryptoCacheUpdateInput = {
+        price,
+        last_updated: now,
+      }
+
+      await this.cryptoCacheRepository.upsertPrice(
+        apiCrypto.symbol,
+        createData,
+        priceUpdate,
       )
     }
 
-    // notify via WebSocket that prices have been updated
     WebSocketService.broadcastPriceUpdate()
   }
 }

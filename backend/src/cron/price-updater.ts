@@ -1,5 +1,4 @@
 import cron from 'node-cron'
-import { WebSocketService } from '@/services/websocket.service'
 import { makePopulateFixedCryptoCacheUseCase } from '@/use-cases/factories/make-populate-fixed-crypto-cache-use-case'
 
 export class PriceUpdaterCron {
@@ -33,9 +32,7 @@ export class PriceUpdaterCron {
       try {
         const populateCryptoCacheUseCase = makePopulateFixedCryptoCacheUseCase()
         await populateCryptoCacheUseCase.execute()
-        
-        WebSocketService.broadcastPriceUpdate()
-        
+
         const duration = Date.now() - startTime.getTime()
         console.log(`✅ Cron run #${this.runCount} completed in ${duration}ms`)
         
@@ -86,9 +83,7 @@ export class PriceUpdaterCron {
     try {
       const populateCryptoCacheUseCase = makePopulateFixedCryptoCacheUseCase()
       await populateCryptoCacheUseCase.execute()
-      
-      WebSocketService.broadcastPriceUpdate()
-      
+
       const duration = Date.now() - startTime.getTime()
       console.log(`✅ Manual trigger update #${this.runCount} completed in ${duration}ms`)
       
