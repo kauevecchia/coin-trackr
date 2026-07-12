@@ -1,4 +1,4 @@
-import { fetchFixedCryptosFromBinance } from '@/lib/binance'
+import { fetchFixedCryptosFromCryptoCompare } from '@/lib/cryptocompare'
 import { CryptoCacheRepository } from '@/repositories/crypto-cache-repository'
 import { Prisma } from '@/generated/prisma'
 import { Decimal } from '@prisma/client/runtime/library'
@@ -10,7 +10,7 @@ export class PopulateFixedCryptoCacheUseCase {
   async execute() {
     let cryptosFromApi
     try {
-      cryptosFromApi = await fetchFixedCryptosFromBinance()
+      cryptosFromApi = await fetchFixedCryptosFromCryptoCompare()
     } catch (error) {
       throw new Error(
         'Failed to fetch crypto details from external API for cache population.',
