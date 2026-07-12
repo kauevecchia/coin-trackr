@@ -23,30 +23,26 @@ export class PopulateFixedCryptoCacheUseCase {
 
     const now = new Date()
 
-    await Promise.all(
-      cryptosFromApi.map((apiCrypto) => {
-        const price = new Decimal(apiCrypto.price?.toString() || '0')
+    const items = cryptosFromApi.map((apiCrypto) => {
+      const price = new Decimal(apiCrypto.price?.toString() || '0')
 
-        const createData: Prisma.CryptoCacheCreateInput = {
+      return {
+        symbol: apiCrypto.symbol,
+        createData: {
           symbol: apiCrypto.symbol,
           name: apiCrypto.name,
           price,
           image_url: null,
           last_updated: now,
-        }
-
-        const priceUpdate: Prisma.CryptoCacheUpdateInput = {
+        } satisfies Prisma.CryptoCacheCreateInput,
+        priceUpdate: {
           price,
           last_updated: now,
-        }
+        } satisfies Prisma.CryptoCacheUpdateInput,
+      }
+    })
 
-        return this.cryptoCacheRepository.upsertPrice(
-          apiCrypto.symbol,
-          createData,
-          priceUpdate,
-        )
-      }),
-    )
+    await this.cryptoCacheRepository.bulkUpsertPrice(items)
 
     WebSocketService.broadcastPriceUpdate()
   }

@@ -53,6 +53,24 @@ export class PrismaCryptoCacheRepository implements CryptoCacheRepository {
     return crypto
   }
 
+  async bulkUpsertPrice(
+    items: Array<{
+      symbol: string
+      createData: Prisma.CryptoCacheCreateInput
+      priceUpdate: Prisma.CryptoCacheUpdateInput
+    }>,
+  ) {
+    await prisma.$transaction(
+      items.map(({ symbol, createData, priceUpdate }) =>
+        prisma.cryptoCache.upsert({
+          where: { symbol },
+          create: createData,
+          update: priceUpdate,
+        }),
+      ),
+    )
+  }
+
   async delete(symbol: string) {
     await prisma.cryptoCache.delete({
       where: {

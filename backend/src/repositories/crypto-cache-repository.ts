@@ -13,5 +13,12 @@ export interface CryptoCacheRepository {
     createData: Prisma.CryptoCacheCreateInput,
     priceUpdate: Prisma.CryptoCacheUpdateInput,
   ): Promise<CryptoCache>
+  bulkUpsertPrice(
+    items: Array<{
+      symbol: string
+      createData: Prisma.CryptoCacheCreateInput
+      priceUpdate: Prisma.CryptoCacheUpdateInput
+    }>,
+  ): Promise<void>
   delete(symbol: string): Promise<void>
 }
